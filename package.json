@@ -1,0 +1,23 @@
+{
+  "name": "valet-linux-plus-docs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static documentation website for Valet Linux and Valet Linux Plus - built with HTML, Tailwind CSS and Vue.js (no CDN).",
+  "scripts": {
+    "dev": "npm run build:css -- --watch",
+    "build": "npm run build:css",
+    "build:css": "tailwindcss -i ./assets/css/input.css -o ./assets/css/tailwind.css --minify",
+    "serve": "npx --yes serve ."
+  },
+  "keywords": ["valet", "valet-linux-plus", "laravel", "php", "linux", "documentation"],
+  "license": "MIT",
+  "type": "commonjs",
+  "devDependencies": {
+    "autoprefixer": "^10.6.2",
+    "postcss": "^8.5.33",
+    "tailwindcss": "^3.4.17"
+  },
+  "dependencies": {
+    "vue": "^3.5.13"
+  }
+}

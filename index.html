@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Complete, offline-ready documentation for both Valet Linux (cpriego/valet-linux) and Valet Linux+ (genesisweb/valet-linux-plus): installation, commands, PHP versions, databases, drivers, sharing, migration, and more.">
+  <meta name="theme-color" content="#f97316">
+  <title>Valet Linux &amp; Valet Linux+ — Complete Documentation</title>
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/tailwind.css">
+  <style>[v-cloak]{display:none}</style>
+</head>
+<body class="min-h-screen bg-white text-ink-700 dark:bg-ink-950 dark:text-ink-300">
+
+<div id="app" v-cloak>
+
+  <!-- reading progress -->
+  <div class="fixed inset-x-0 top-0 z-[70] h-0.5 bg-transparent">
+    <div class="h-full bg-gradient-to-r from-brand-500 to-amber-400 transition-[width] duration-150" :style="{ width: progress + '%' }"></div>
+  </div>
+
+  <!-- ================= HEADER ================= -->
+  <header class="fixed inset-x-0 top-0 z-50 border-b border-ink-200/80 bg-white/90 backdrop-blur-xl dark:border-ink-800/80 dark:bg-ink-950/90">
+    <div class="mx-auto flex h-16 max-w-content items-center gap-4 px-4 sm:px-6 lg:px-8">
+      <button class="rounded-lg p-2 text-ink-500 hover:bg-ink-100 lg:hidden dark:hover:bg-ink-800" @click="mobileNav = true" aria-label="Open navigation">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+
+      <a href="#" class="group flex shrink-0 items-center gap-2.5" @click.prevent="go('overview')">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-lg shadow-brand-600/25 transition group-hover:scale-105">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 17 5-5-5-5"/><path d="M12 19h8"/></svg>
+        </span>
+        <span class="text-[17px] font-extrabold tracking-tight text-ink-900 dark:text-white">Valet <span class="text-brand-600 dark:text-brand-400">Linux</span></span>
+        <span class="hidden rounded-md border border-brand-200 bg-brand-50 px-1.5 py-0.5 text-[10px] font-bold text-brand-700 sm:inline dark:border-brand-800 dark:bg-brand-950/60 dark:text-brand-300">DOCS · BOTH PROJECTS</span>
+      </a>
+
+      <div class="ml-2 hidden items-center gap-1 xl:flex">
+        <button v-for="top in topLinks" :key="top.id" @click="go(top.id)"
+          class="rounded-lg px-3 py-2 text-sm font-medium transition"
+          :class="active === top.id ? 'bg-brand-50 text-brand-700 dark:bg-brand-950/50 dark:text-brand-300' : 'text-ink-600 hover:bg-ink-100 hover:text-ink-900 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-white'">
+          {{ top.label }}
+        </button>
+      </div>
+
+      <div class="ml-auto flex items-center gap-2">
+        <button @click="paletteOpen = true" class="hidden items-center gap-2 rounded-xl border border-ink-200 bg-ink-50/70 py-2 pl-3 pr-2 text-sm text-ink-500 transition hover:border-brand-300 hover:text-ink-700 md:flex dark:border-ink-700 dark:bg-ink-900 dark:text-ink-400 dark:hover:border-brand-700">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <span class="w-32 text-left">Search docs…</span>
+          <kbd>⌘ K</kbd>
+        </button>
+        <button @click="paletteOpen = true" class="rounded-lg p-2 text-ink-500 hover:bg-ink-100 md:hidden dark:hover:bg-ink-800" aria-label="Search">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        </button>
+        <button @click="toggleTheme" class="rounded-lg p-2 text-ink-500 transition hover:bg-ink-100 dark:hover:bg-ink-800" :aria-label="dark ? 'Switch to light mode' : 'Switch to dark mode'">
+          <svg v-if="!dark" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+          <svg v-else class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+        <a href="https://github.com/genesisweb/valet-linux-plus" target="_blank" rel="noopener" class="rounded-lg p-2 text-ink-500 transition hover:bg-ink-100 hover:text-ink-900 dark:hover:bg-ink-800 dark:hover:text-white" aria-label="GitHub repository">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.8.1-.8 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.4 3.6 1.1.1-.8.4-1.4.8-1.7-2.7-.3-5.5-1.4-5.5-6.2 0-1.4.5-2.5 1.3-3.4-.1-.3-.5-1.6.1-3.3 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.9 18.3 5.2 18.3 5.2c.7 1.7.3 3 .1 3.3.8.9 1.3 2 1.3 3.4 0 4.8-2.8 5.9-5.5 6.2.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MOBILE NAV ================= -->
+  <div v-if="mobileNav" class="fixed inset-0 z-[60] lg:hidden">
+    <div class="absolute inset-0 bg-ink-950/50 backdrop-blur-sm" @click="mobileNav = false"></div>
+    <div class="absolute inset-y-0 left-0 w-[285px] max-w-[85vw] overflow-y-auto border-r border-ink-200 bg-white p-5 shadow-2xl dark:border-ink-800 dark:bg-ink-900">
+      <div class="mb-5 flex items-center justify-between">
+        <span class="text-sm font-bold text-ink-900 dark:text-white">Documentation</span>
+        <button @click="mobileNav = false" class="rounded-lg p-1.5 text-ink-500 hover:bg-ink-100 dark:hover:bg-ink-800"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <nav class="space-y-6">
+        <div v-for="group in navGroups" :key="group.title">
+          <p class="mb-2 px-3 text-[10px] font-bold uppercase tracking-[.18em] text-ink-400">{{ group.title }}</p>
+          <button v-for="item in group.items" :key="item.id" @click="go(item.id); mobileNav = false"
+            class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition"
+            :class="active === item.id ? 'bg-brand-50 font-semibold text-brand-700 dark:bg-brand-950/50 dark:text-brand-300' : 'text-ink-600 hover:bg-ink-100 dark:text-ink-400 dark:hover:bg-ink-800'">
+            <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path :d="iconPaths[item.icon] || iconPaths.book"/></svg>
+            {{ item.label }}
+          </button>
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="fixed bottom-0 left-0 top-16 z-40 hidden w-[272px] overflow-y-auto border-r border-ink-200 bg-ink-50/50 px-4 py-7 lg:block dark:border-ink-800 dark:bg-ink-900/30">
+    <nav class="space-y-7 pb-10">
+      <div v-for="group in navGroups" :key="group.title">
+        <p class="mb-2 px-3 text-[10px] font-bold uppercase tracking-[.18em] text-ink-400">{{ group.title }}</p>
+        <button v-for="item in group.items" :key="item.id" @click="go(item.id)"
+          class="group flex w-full items-center gap-2.5 rounded-lg px-3 py-[7px] text-left text-[13px] transition"
+          :class="active === item.id ? 'bg-white font-semibold text-brand-600 shadow-sm ring-1 ring-ink-200/70 dark:bg-ink-800 dark:text-brand-400 dark:ring-ink-700' : 'text-ink-600 hover:bg-white/80 hover:text-ink-900 dark:text-ink-400 dark:hover:bg-ink-800/60 dark:hover:text-white'">
+          <svg class="h-4 w-4 shrink-0" :class="active === item.id ? 'text-brand-500' : 'text-ink-400 group-hover:text-ink-600 dark:group-hover:text-ink-200'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path :d="iconPaths[item.icon] || iconPaths.book"/></svg>
+          <span class="truncate">{{ item.label }}</span>
+          <span v-if="item.badge" class="ml-auto rounded bg-brand-100 px-1.5 py-0.5 text-[9px] font-bold text-brand-700 dark:bg-brand-950 dark:text-brand-300">{{ item.badge }}</span>
+        </button>
+      </div>
+    </nav>
+    <div class="mx-1 mt-2 space-y-3 rounded-xl border border-brand-200 bg-gradient-to-br from-brand-50 to-white p-4 dark:border-brand-900 dark:from-brand-950/40 dark:to-ink-900">
+      <div>
+        <p class="text-[10px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-300">Original · cpriego</p>
+        <p class="mt-0.5 text-sm font-extrabold text-ink-900 dark:text-white">Valet Linux {{ legacyVersion }}</p>
+        <button @click="go('valet-commands')" class="mt-1 text-[11px] font-bold text-sky-600 hover:underline dark:text-sky-400">29 commands →</button>
+      </div>
+      <div class="border-t border-brand-200 pt-3 dark:border-brand-900">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-brand-700 dark:text-brand-300">Advanced · genesisweb</p>
+        <p class="mt-0.5 text-sm font-extrabold text-ink-900 dark:text-white">Valet Linux+ {{ version }}</p>
+        <button @click="go('commands')" class="mt-1 text-[11px] font-bold text-brand-600 hover:underline dark:text-brand-400">45 commands →</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main class="pt-16 lg:pl-[272px]">
+    <div class="mx-auto flex max-w-content gap-10 px-4 sm:px-8 lg:px-12">
+      <div class="min-w-0 flex-1 pb-20">
+
+        <!-- ============================= PROJECTS ============================= -->
+        <section id="section-projects" v-show="active === 'projects'" class="animate-fade-up py-10 sm:py-14">
+          <span class="badge bg-brand-100 text-brand-700 dark:bg-brand-950/70 dark:text-brand-300"><span class="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-500"></span> Two projects · one offline reference</span>
+          <h1 class="mt-6 text-4xl font-extrabold leading-[1.1] tracking-tight text-ink-900 sm:text-5xl lg:text-[56px] dark:text-white">
+            Pick your <span class="bg-gradient-to-r from-brand-600 to-amber-500 bg-clip-text text-transparent">Valet.</span>
+          </h1>
+          <p class="mt-6 max-w-3xl text-lg leading-8 text-ink-600 dark:text-ink-400">
+            Two related tools solve the same problem — instant <code>*.test</code> sites for PHP work on Linux — at different stages of evolution. This site documents both completely, with separate guides, command references and a migration path.
+          </p>
+
+          <div class="mt-10 grid gap-5 lg:grid-cols-2">
+            <article class="surface relative overflow-hidden p-6 sm:p-7">
+              <span class="absolute right-5 top-5 rounded-full bg-sky-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-sky-700 dark:bg-sky-950/60 dark:text-sky-300">Original</span>
+              <p class="eyebrow">cpriego/valet-linux</p>
+              <h2 class="mt-2 text-2xl font-extrabold text-ink-900 dark:text-white">Valet Linux</h2>
+              <p class="mt-3 max-w-xl text-sm leading-7 text-ink-600 dark:text-ink-400">The minimalist Laravel-first environment by Carlos Priego: Nginx + Dnsmasq + PHP-FPM, roughly 7&nbsp;MB of RAM, no Vagrant and no <code>/etc/hosts</code> edits. Bring your own database, mail and cache.</p>
+              <div class="mt-5 flex flex-wrap gap-2 text-[11px] font-semibold">
+                <span class="badge bg-sky-50 text-sky-700 dark:bg-sky-950/50 dark:text-sky-300">v2.4.5 source</span>
+                <span class="badge bg-ink-100 text-ink-600 dark:bg-ink-800 dark:text-ink-300">29 commands</span>
+                <span class="badge bg-ink-100 text-ink-600 dark:bg-ink-800 dark:text-ink-300">PHP 5.6+</span>
+                <span class="badge bg-ink-100 text-ink-600 dark:bg-ink-800 dark:text-ink-300">~/.valet</span>
+              </div>
+              <div class="mt-6 flex flex-wrap gap-3">
+                <button @click="go('valet-overview')" class="btn-primary">Read original docs <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+                <button @click="go('valet-commands')" class="btn-ghost">29 commands</button>
+              </div>
+            </article>
+
+            <article class="surface relative overflow-hidden p-6 sm:p-7">
+              <span class="absolute right-5 top-5 rounded-full bg-brand-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-700 dark:bg-brand-950/60 dark:text-brand-300">Advanced</span>
+              <p class="eyebrow">genesisweb/valet-linux-plus</p>
+              <h2 class="mt-2 text-2xl font-extrabold text-ink-900 dark:text-white">Valet Linux+</h2>
+              <p class="mt-3 max-w-xl text-sm leading-7 text-ink-600 dark:text-ink-400">The modern fork by Uttam Rabadiya and Divyank Munjapara: the same lightweight core plus managed MySQL/MariaDB, Mailpit, Redis, ngrok auth, editor shortcuts, PHP 8.2–8.5 and 45 commands.</p>
+              <div class="mt-5 flex flex-wrap gap-2 text-[11px] font-semibold">
+                <span class="badge bg-brand-100 text-brand-700 dark:bg-brand-950/50 dark:text-brand-300">v2.0.3</span>
+                <span class="badge bg-ink-100 text-ink-600 dark:bg-ink-800 dark:text-ink-300">45 commands</span>
+                <span class="badge bg-ink-100 text-ink-600 dark:bg-ink-800 dark:text-ink-300">PHP 8.2+</span>
+                <span class="badge bg-ink-100 text-ink-600 dark:bg-ink-800 dark:text-ink-300">~/.config/valet</span>
+              </div>
+              <div class="mt-6 flex flex-wrap gap-3">
+                <button @click="go('overview')" class="btn-primary">Read Linux+ docs <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+                <button @click="go('commands')" class="btn-ghost">45 commands</button>
+              </div>
+            </article>
+          </div>
+
+          <div class="callout mt-8 border-brand-200 bg-brand-50/70 text-brand-900 dark:border-brand-900 dark:bg-brand-950/30 dark:text-brand-100">
+            <svg class="mt-0.5 h-5 w-5 shrink-0 text-brand-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01" stroke-linecap="round"/></svg>
+            <div><span class="callout-title">Shared DNA</span>Both projects use the same core idea: a background Nginx service, Dnsmasq for <code>*.test</code>, per-site driver detection and PHP-FPM sockets. <code>park</code>, <code>link</code>, <code>secure</code>, <code>proxy</code> and <code>share</code> feel almost identical in both CLIs.</div>
+          </div>
+        </section>
+
+        <!-- ============================= PROJECT COMPARISON ============================= -->
+        <section id="section-project-comparison" v-show="active === 'project-comparison'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Side by side</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">What changed between the two</h1>
+          <p class="lead mt-4 text-lg">Valet Linux+ is a continuation, not a completely different product. The table below compares the source, requirements, file locations and feature sets documented on this site.</p>
+
+          <div class="mt-8 overflow-x-auto rounded-2xl border border-ink-200 dark:border-ink-800">
+            <table class="w-full min-w-[760px] text-left text-sm">
+              <thead class="bg-ink-50 dark:bg-ink-900"><tr><th class="px-5 py-3 text-xs font-bold uppercase tracking-wider text-ink-500">Area</th><th class="px-5 py-3 text-xs font-bold uppercase tracking-wider text-sky-600">Valet Linux</th><th class="px-5 py-3 text-xs font-bold uppercase tracking-wider text-brand-600">Valet Linux+</th></tr></thead>
+              <tbody class="divide-y divide-ink-200 dark:divide-ink-800">
+                <tr v-for="row in projectComparison" :key="row[0]"><td class="px-5 py-3 font-semibold text-ink-800 dark:text-ink-200">{{ row[0] }}</td><td class="px-5 py-3 text-ink-600 dark:text-ink-400">{{ row[1] }}</td><td class="px-5 py-3 text-brand-700 dark:text-brand-400">{{ row[2] }}</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 class="mt-14">Which one should I use?</h2>
+          <div class="mt-6 grid gap-4 md:grid-cols-2">
+            <div class="surface p-5"><p class="text-sm font-bold text-sky-700 dark:text-sky-300">Stay on Valet Linux</p><p class="mt-2 text-sm leading-7 text-ink-600 dark:text-ink-400">Your PHP 5.6–8.1 apps work, you manage your own database/cache/mail stack, and you need the stable original toolchain. Keep reading the <button class="font-bold text-sky-600 hover:underline dark:text-sky-400" @click="go('valet-overview')">original guides</button>.</p></div>
+            <div class="surface p-5"><p class="text-sm font-bold text-brand-700 dark:text-brand-300">Move to Valet Linux+</p><p class="mt-2 text-sm leading-7 text-ink-600 dark:text-ink-400">You want PHP 8.2–8.5, managed databases, Mailpit, Redis, editor shortcuts and a modern 45-command CLI. Start with the <button class="font-bold text-brand-600 hover:underline dark:text-brand-400" @click="go('migration')">migration map</button>.</p></div>
+          </div>
+
+          <div class="callout mt-8 border-ink-200 bg-ink-50 text-ink-600 dark:border-ink-800 dark:bg-ink-900/60 dark:text-ink-400">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01" stroke-linecap="round"/></svg>
+            <div><span class="callout-title">About the archived docs</span>The original project documents live at <a href="https://cpriego.github.io/valet-linux/" target="_blank" rel="noopener">cpriego.github.io/valet-linux</a>. The Linux+ domain <code>valetlinux.plus</code> was unavailable when this site was built, so archived official pages were used and the gaps were filled from the source code.</div>
+          </div>
+        </section>
+
+        <!-- ============================= OVERVIEW ============================= -->
+        <section id="section-overview" v-show="active === 'overview'" class="animate-fade-up py-10 sm:py-14">
+          <div class="grid items-center gap-12 lg:grid-cols-[1.05fr_.95fr]">
+            <div>
+              <span class="badge bg-brand-100 text-brand-700 dark:bg-brand-950/70 dark:text-brand-300"><span class="h-1.5 w-1.5 animate-pulse-soft rounded-full bg-brand-500"></span> v2.0.3 · MIT licensed</span>
+              <h1 class="mt-6 text-4xl font-extrabold leading-[1.1] tracking-tight text-ink-900 sm:text-5xl lg:text-[56px] dark:text-white">
+                Your PHP projects,<br><span class="bg-gradient-to-r from-brand-600 to-amber-500 bg-clip-text text-transparent">served in seconds.</span>
+              </h1>
+              <p class="mt-6 max-w-xl text-lg leading-8 text-ink-600 dark:text-ink-400">
+                Valet Linux+ is a blazing fast local development environment for Linux minimalists. No Vagrant, no Docker, no <code>/etc/hosts</code> edits. Just <code>.test</code> domains, HTTPS, databases, mail, caches and tunnels — running on about 7&nbsp;MB of RAM.
+              </p>
+              <div class="mt-8 flex flex-wrap gap-3">
+                <button @click="go('installation')" class="btn-primary">Get started <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+                <button @click="go('commands')" class="btn-ghost">Browse all 45 commands</button>
+              </div>
+              <div class="mt-10 grid grid-cols-2 gap-4 border-t border-ink-200 pt-7 sm:grid-cols-4 dark:border-ink-800">
+                <div><p class="text-2xl font-extrabold text-ink-900 dark:text-white">~7 MB</p><p class="text-xs text-ink-500">RAM footprint</p></div>
+                <div><p class="text-2xl font-extrabold text-ink-900 dark:text-white">0</p><p class="text-xs text-ink-500">hosts file edits</p></div>
+                <div><p class="text-2xl font-extrabold text-ink-900 dark:text-white">45</p><p class="text-xs text-ink-500">CLI commands</p></div>
+                <div><p class="text-2xl font-extrabold text-ink-900 dark:text-white">6</p><p class="text-xs text-ink-500">package managers</p></div>
+              </div>
+            </div>
+
+            <div class="surface overflow-hidden">
+              <div class="flex items-center gap-2 border-b border-ink-200 bg-ink-50 px-4 py-3 dark:border-ink-800 dark:bg-ink-900">
+                <span class="h-3 w-3 rounded-full bg-red-400"></span><span class="h-3 w-3 rounded-full bg-amber-400"></span><span class="h-3 w-3 rounded-full bg-emerald-400"></span>
+                <span class="ml-2 font-mono text-[11px] text-ink-400">~/sites/blog — bash</span>
+              </div>
+              <div class="bg-[#0d1117] p-5 font-mono text-[12.5px] leading-7 text-ink-200 sm:p-6">
+                <p><span class="text-brand-400">➜</span> <span class="text-sky-300">blog</span> valet park</p>
+                <p class="text-ink-500">The [/home/you/sites] directory has been added to Valet's paths.</p>
+                <p class="mt-3"><span class="text-brand-400">➜</span> <span class="text-sky-300">blog</span> valet secure</p>
+                <p class="text-ink-500">The [blog.test] site has been secured with a fresh TLS certificate.</p>
+                <p class="mt-3"><span class="text-brand-400">➜</span> <span class="text-sky-300">blog</span> valet db:create</p>
+                <p class="text-ink-500">Database [blog] created successfully</p>
+                <p class="mt-3"><span class="text-brand-400">➜</span> <span class="text-sky-300">blog</span> valet open</p>
+                <p class="text-emerald-400">✦ https://blog.test/ → 200 OK</p>
+                <p class="mt-4 text-ink-600"># That's the whole setup. Now go build something. <span class="animate-pulse text-brand-400">▌</span></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="prose-docs mt-20 grid gap-10 lg:grid-cols-2">
+            <div>
+              <p class="eyebrow">01 / The idea</p>
+              <h2 class="mt-3">What is Valet Linux+?</h2>
+              <p>Valet Linux+ configures your system to run <strong>Nginx</strong> in the background on boot. Using <strong>Dnsmasq</strong>, it routes every request for the <code>*.test</code> domain to projects on your machine. PHP requests are handed to <strong>PHP-FPM</strong> through per-version sockets.</p>
+              <p>It is not a replacement for Vagrant or Homestead — it is a faster, lighter alternative for developers who want flexible basics and extreme speed. It is the Linux continuation of the original Laravel Valet idea, packaged as <code>genesisweb/valet-linux-plus</code>.</p>
+              <div class="callout border-brand-200 bg-brand-50/70 text-brand-900 dark:border-brand-900 dark:bg-brand-950/30 dark:text-brand-100">
+                <svg class="mt-0.5 h-5 w-5 shrink-0 text-brand-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01" stroke-linecap="round"/></svg>
+                <div><span class="callout-title">Built for Linux first</span>Unlike ports of macOS Valet, this project natively supports apt, dnf, yum, pacman, eopkg and PackageKit, plus systemd and SysV-style service management.</div>
+              </div>
+            </div>
+            <div>
+              <p class="eyebrow">02 / Under the hood</p>
+              <h2 class="mt-3">How a request travels</h2>
+              <div class="mt-6 space-y-3">
+                <div v-for="(step, i) in requestFlow" :key="step.title" class="flex gap-4 rounded-xl border border-ink-200 bg-white p-4 dark:border-ink-800 dark:bg-ink-900/50">
+                  <span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-brand-100 text-xs font-extrabold text-brand-700 dark:bg-brand-950 dark:text-brand-300">{{ i + 1 }}</span>
+                  <div><p class="text-sm font-bold text-ink-900 dark:text-white">{{ step.title }}</p><p class="mt-1 text-sm text-ink-500 dark:text-ink-400">{{ step.text }}</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-20">
+            <p class="eyebrow">03 / Feature set</p>
+            <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl dark:text-white">Everything in the box</h2>
+            <p class="mt-3 max-w-3xl leading-7">One Composer package wires up the whole local stack. These are the capabilities documented in this site — every one of them is covered in detail in the sections in the sidebar.</p>
+            <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <button v-for="f in featureCards" :key="f.title" @click="go(f.page)" class="surface group p-5 text-left transition hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-glow dark:hover:border-brand-800">
+                <span class="grid h-10 w-10 place-items-center rounded-xl bg-brand-50 text-brand-600 group-hover:bg-brand-600 group-hover:text-white dark:bg-brand-950/60 dark:text-brand-400">
+                  <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path :d="iconPaths[f.icon]"/></svg>
+                </span>
+                <p class="mt-4 text-sm font-bold text-ink-900 dark:text-white">{{ f.title }}</p>
+                <p class="mt-1.5 text-[13px] leading-6 text-ink-500 dark:text-ink-400">{{ f.text }}</p>
+                <p class="mt-3 text-[11px] font-bold text-brand-600 opacity-0 transition group-hover:opacity-100 dark:text-brand-400">Read guide →</p>
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-20">
+            <p class="eyebrow">04 / Comparison</p>
+            <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl dark:text-white">Why developers pick Valet</h2>
+            <div class="mt-6 overflow-x-auto rounded-2xl border border-ink-200 dark:border-ink-800">
+              <table class="w-full min-w-[640px] text-left text-sm">
+                <thead class="bg-ink-50 dark:bg-ink-900"><tr><th class="px-5 py-3 text-xs font-bold uppercase tracking-wider text-ink-500">Capability</th><th class="px-5 py-3 text-xs font-bold uppercase tracking-wider text-brand-600">Valet Linux+</th><th class="px-5 py-3 text-xs font-bold uppercase tracking-wider text-ink-500">Vagrant / Homestead</th><th class="px-5 py-3 text-xs font-bold uppercase tracking-wider text-ink-500">Docker Compose</th></tr></thead>
+                <tbody class="divide-y divide-ink-200 dark:divide-ink-800">
+                  <tr v-for="row in comparison" :key="row[0]"><td class="px-5 py-3 font-semibold text-ink-800 dark:text-ink-200">{{ row[0] }}</td><td class="px-5 py-3 text-brand-700 dark:text-brand-400">{{ row[1] }}</td><td class="px-5 py-3 text-ink-500">{{ row[2] }}</td><td class="px-5 py-3 text-ink-500">{{ row[3] }}</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="surface mt-20 grid gap-6 p-6 sm:grid-cols-2 sm:p-8">
+            <div>
+              <p class="eyebrow">Project facts</p>
+              <h3 class="mt-2 text-xl font-bold">Open source, community driven</h3>
+              <p class="mt-3 text-sm leading-7">Created and maintained by Uttam Rabadiya and Divyank Munjapara with contributions from developers around the world. Released under the MIT license.</p>
+            </div>
+            <dl class="grid grid-cols-2 gap-4 text-sm">
+              <div><dt class="text-xs text-ink-400">Composer package</dt><dd class="mt-1 font-mono text-xs font-semibold text-ink-800 dark:text-ink-200">genesisweb/valet-linux-plus</dd></div>
+              <div><dt class="text-xs text-ink-400">CLI name</dt><dd class="mt-1 font-mono text-xs font-semibold text-ink-800 dark:text-ink-200">valet</dd></div>
+              <div><dt class="text-xs text-ink-400">Default TLD</dt><dd class="mt-1 font-mono text-xs font-semibold text-ink-800 dark:text-ink-200">.test</dd></div>
+              <div><dt class="text-xs text-ink-400">PHP required</dt><dd class="mt-1 font-mono text-xs font-semibold text-ink-800 dark:text-ink-200">^8.2</dd></div>
+              <div><dt class="text-xs text-ink-400">License</dt><dd class="mt-1 font-mono text-xs font-semibold text-ink-800 dark:text-ink-200">MIT</dd></div>
+              <div><dt class="text-xs text-ink-400">Latest release</dt><dd class="mt-1 font-mono text-xs font-semibold text-ink-800 dark:text-ink-200">2.0.3</dd></div>
+            </dl>
+          </div>
+        </section>
+
+        <!-- ============================= FEATURES ============================= -->
+        <section id="section-features" v-show="active === 'features'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Start here</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Features &amp; capabilities</h1>
+          <p class="lead mt-4 text-lg">A complete local stack without the weight of a virtual machine. Here is the full feature surface of Valet Linux+, with links to the detailed guides.</p>
+
+          <div class="mt-10 grid gap-5 md:grid-cols-2">
+            <div v-for="group in featureGroups" :key="group.title" class="surface p-6">
+              <div class="flex items-center gap-3">
+                <span class="grid h-9 w-9 place-items-center rounded-lg bg-brand-100 text-brand-600 dark:bg-brand-950 dark:text-brand-400"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path :d="iconPaths[group.icon]"/></svg></span>
+                <h2 class="!mt-0 text-lg font-bold">{{ group.title }}</h2>
+              </div>
+              <ul class="!mt-5 space-y-3">
+                <li v-for="item in group.items" :key="item"><span class="font-medium">{{ item }}</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <h2 class="mt-16">What the installer sets up</h2>
+          <p>Every <code>valet install</code> wires up the following services and helpers. Each can be started, stopped and restarted individually.</p>
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div v-for="svc in installedServices" :key="svc.name" class="rounded-xl border border-ink-200 bg-white p-4 dark:border-ink-800 dark:bg-ink-900/50">
+              <p class="text-sm font-bold text-ink-900 dark:text-white">{{ svc.name }}</p>
+              <p class="mt-1 text-xs leading-5 text-ink-500">{{ svc.detail }}</p>
+            </div>
+          </div>
+
+          <h2 class="mt-16">Feature history (v1 → v2)</h2>
+          <table class="doc-table"><thead><tr><th>Feature</th><th>v1.x</th><th>v2.x (current)</th></tr></thead><tbody>
+            <tr><td>Config directory</td><td><code>~/.valet</code></td><td><code>~/.config/valet</code> (auto-migrated)</td></tr>
+            <tr><td>Global PHP via <code>valet use</code></td><td>7.1 – 8.1</td><td>8.2 – 8.5</td></tr>
+            <tr><td>Older PHP per site</td><td>Early isolate support</td><td>Full <code>isolate</code> family, 7.0 – 8.5</td></tr>
+            <tr><td>Subdomains</td><td><code>subdomain:add</code></td><td>Removed — use <code>valet link</code></td></tr>
+            <tr><td>LAN directory listing</td><td><code>/valet-sites</code></td><td>Removed</td></tr>
+            <tr><td>ngrok binary</td><td>Bundled in source</td><td>Downloaded during <code>valet install</code></td></tr>
+            <tr><td>Console output</td><td>Plain text</td><td>termwind + console-components</td></tr>
+          </tbody></table>
+        </section>
+
+        <!-- ============================= REQUIREMENTS ============================= -->
+        <section id="section-requirements" v-show="active === 'requirements'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Start here</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Requirements</h1>
+          <p class="lead mt-4 text-lg">Valet Linux+ needs PHP 8.2 or newer, Composer, and a handful of small system packages. Pick your distribution below.</p>
+
+          <h2 class="mt-12">Ubuntu / Debian</h2>
+          <table class="doc-table"><thead><tr><th>Requirement</th><th>Value</th></tr></thead><tbody>
+            <tr><td>Ubuntu version</td><td>20.04+</td></tr>
+            <tr><td>OS packages</td><td><code>sudo apt-get install curl libnss3-tools jq xsel openssl ca-certificates</code></td></tr>
+            <tr><td>PHP version</td><td>8.2+</td></tr>
+            <tr><td>PHP extensions</td><td><code>php*-cli php*-curl php*-mbstring php*-xml php*-zip php*-posix</code> (replace <code>*</code> with your version)</td></tr>
+          </tbody></table>
+          <div class="callout border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/20 dark:text-amber-100">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke-linejoin="round"/></svg>
+            <div><span class="callout-title">Ubuntu 20.04 and HTTPS</span>To use <code>valet secure</code> on Ubuntu 20.04, add the nginx PPA — the repository version does not support HTTP/2.</div>
+          </div>
+          <code-panel label="nginx PPA for Ubuntu 20.04" lang="bash"><pre><code>sudo add-apt-repository -y ppa:nginx/stable
+sudo apt-get update</code></pre></code-panel>
+
+          <h2 class="mt-14">Fedora</h2>
+          <table class="doc-table"><thead><tr><th>Requirement</th><th>Value</th></tr></thead><tbody>
+            <tr><td>Fedora version</td><td>39+</td></tr>
+            <tr><td>OS packages</td><td><code>dnf install curl nss-tools jq xsel openssl ca-certificates</code></td></tr>
+            <tr><td>PHP version</td><td>8.2+</td></tr>
+            <tr><td>PHP extensions</td><td><code>dnf install php-{cli,curl,process,mbstring,xml,zip,posix}</code></td></tr>
+          </tbody></table>
+          <h3>Regarding SELinux</h3>
+          <p>Fedora users should know how to configure or relax SELinux while Valet writes system files, otherwise changes may be blocked. The simplest approach is permissive mode:</p>
+          <code-panel label="Temporary (until reboot)" lang="bash"><pre><code>sudo setenforce 0</code></pre></code-panel>
+          <p>Permanently: edit <code>/etc/selinux/config</code>, change <code>SELINUX=enforcing</code> to <code>SELINUX=permissive</code>, then reboot. If you intentionally want to skip the check during install, use <code>valet install --ignore-selinux</code>.</p>
+
+          <h2 class="mt-14">Arch Linux</h2>
+          <table class="doc-table"><thead><tr><th>Requirement</th><th>Value</th></tr></thead><tbody>
+            <tr><td>OS packages</td><td><code>pacman -S nss jq xsel networkmanager ca-certificates</code></td></tr>
+            <tr><td>PHP version</td><td>8.2+</td></tr>
+            <tr><td>PHP extensions</td><td><code>pacman -S php-cli php-curl php-mbstring php-xml php-zip php-posix</code></td></tr>
+          </tbody></table>
+
+          <h2 class="mt-14">Composer &amp; the CLI helper</h2>
+          <p>Composer must be installed (see getcomposer.org). The wrapper script also checks for <code>jq</code>, <code>xsel</code> and <code>certutil</code> before commands that need them — a missing dependency stops the command with an explicit message.</p>
+
+          <h2 class="mt-14">Regarding sudo and root</h2>
+          <p>Valet automatically uses <code>sudo</code> for tasks that need it — your user must be a sudoer. <strong>Never install Valet as root or with <code>sudo composer global require</code>.</strong> Run Composer as your normal user; the <code>valet</code> wrapper elevates only the commands that need it.</p>
+
+          <h2 class="mt-14">Supported package managers</h2>
+          <p>Installer logic ships for <span v-for="(pm, i) in packageManagers" :key="pm"><code>{{ pm }}</code><span v-if="i < packageManagers.length - 1">, </span></span>. Service management is handled through systemd or the Linux service manager abstraction.</p>
+        </section>
+
+        <!-- ============================= INSTALLATION ============================= -->
+        <section id="section-installation" v-show="active === 'installation'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Start here</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Installation</h1>
+          <p class="lead mt-4 text-lg">Three commands from a clean Linux install to a working <code>.test</code> development environment.</p>
+
+          <h2 class="mt-12">Step 1 — Install the package</h2>
+          <p>Install Valet Linux+ globally with Composer as your regular user:</p>
+          <code-panel label="Install globally" lang="bash"><pre><code>composer global require genesisweb/valet-linux-plus</code></pre></code-panel>
+          <p>To update later: <code>composer global update genesisweb/valet-linux-plus -W</code>, or simply run <code>valet update</code>.</p>
+
+          <h2 class="mt-14">Step 2 — Add Composer's bin directory to PATH</h2>
+          <p>Add the following to <code>~/.bash_profile</code> or <code>~/.bashrc</code> (adjust for zsh: <code>~/.zshrc</code>):</p>
+          <code-panel label="~/.bashrc" lang="bash"><pre><code>export PATH="$PATH:$HOME/.config/composer/vendor/bin"</code></pre></code-panel>
+          <code-panel label="Reload the shell" lang="bash"><pre><code>source ~/.bashrc</code></pre></code-panel>
+
+          <h2 class="mt-14">Step 3 — Run the installer</h2>
+          <p>This configures and starts Nginx, PHP-FPM, Dnsmasq, Mailpit, Redis and your database, installs ngrok, creates the <code>valet</code> symlink and registers the daemon at boot.</p>
+          <code-panel label="Standard install" lang="bash"><pre><code>valet install</code></pre></code-panel>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div class="rounded-xl border border-ink-200 p-4 dark:border-ink-800"><p class="font-mono text-sm font-bold text-brand-600 dark:text-brand-400">valet install --mariadb</p><p class="mt-1 text-sm text-ink-500">Use MariaDB instead of MySQL.</p></div>
+            <div class="rounded-xl border border-ink-200 p-4 dark:border-ink-800"><p class="font-mono text-sm font-bold text-brand-600 dark:text-brand-400">valet install --ignore-selinux</p><p class="mt-1 text-sm text-ink-500">Skip the SELinux pre-flight check.</p></div>
+          </div>
+          <p>The installer asks whether to link Valet's PHP helper to <code>/usr/local/bin/php</code>. Accepting gives you a CLI that automatically follows the PHP version isolated for the directory you are in.</p>
+
+          <h2 class="mt-14">Step 4 — Verify DNS</h2>
+          <p>Ping any <code>*.test</code> domain — it should resolve to <code>127.0.0.1</code>:</p>
+          <code-panel label="Check Dnsmasq" lang="bash"><pre><code>ping -c1 foobar.test</code></pre></code-panel>
+          <p>If it does not respond, restart your machine (or restart the dnsmasq service) and try again.</p>
+
+          <h2 class="mt-14">Step 5 — Serve your first site</h2>
+          <code-panel label="Park a directory" lang="bash"><pre><code>mkdir -p ~/sites
+cd ~/sites &amp;&amp; valet park
+mkdir example &amp;&amp; cd example
+echo "&lt;?php echo 'Valet Linux+ at your service';" &gt; index.php
+valet open</code></pre></code-panel>
+
+          <div class="callout border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/20 dark:text-emerald-100">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m5 12 4 4L19 6"/></svg>
+            <div><span class="callout-title">Install once, forget about it</span>Valet starts its services automatically at boot. There is no need to run <code>valet start</code> or <code>valet install</code> again after the initial setup.</div>
+          </div>
+
+          <h2 class="mt-14">Logs and diagnostics</h2>
+          <p>Valet logs live in <code>~/.config/valet/Log</code>. Use <code>valet status</code> for PHP-FPM and Nginx status, and <code>valet which</code> inside a project to see which driver is serving it.</p>
+          <code-panel label="Diagnostics" lang="bash"><pre><code>valet status
+valet which
+valet paths
+tail -f ~/.config/valet/Log/nginx-error.log</code></pre></code-panel>
+        </section>
+
+        <!-- ============================= SERVING SITES ============================= -->
+        <section id="section-serving-sites" v-show="active === 'serving-sites'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Guides</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Serving sites</h1>
+          <p class="lead mt-4 text-lg">Park a folder and every project inside it becomes a <code>.test</code> site automatically. No per-site config, no hosts file.</p>
+
+          <h2 class="mt-12">Park a projects directory</h2>
+          <code-panel label="The usual setup" lang="bash"><pre><code>mkdir ~/sites
+cd ~/sites &amp;&amp; valet park</code></pre></code-panel>
+          <p>Now any directory inside <code>~/sites</code> is served at <code>http://folder-name.test</code>. For example:</p>
+          <code-panel label="Example project" lang="bash"><pre><code>mkdir ~/sites/example
+cd ~/sites/example
+echo "&lt;?php echo 'Valet Linux+ at your service';" &gt; index.php
+valet open</code></pre></code-panel>
+
+          <h2 class="mt-14">Manage parked paths</h2>
+          <table class="doc-table"><thead><tr><th>Command</th><th>What it does</th></tr></thead><tbody>
+            <tr><td><code>valet park [path]</code></td><td>Registers the current directory (or the given path) as a projects root.</td></tr>
+            <tr><td><code>valet paths</code></td><td>Displays every registered path in a table.</td></tr>
+            <tr><td><code>valet forget [path]</code></td><td>Removes the current directory (or given path) from the paths list.</td></tr>
+            <tr><td><code>valet which</code></td><td>Shows the driver assigned to the current directory.</td></tr>
+            <tr><td><code>valet open [domain]</code></td><td>Opens the current (or given) site in your browser via <code>xdg-open</code>.</td></tr>
+          </tbody></table>
+
+          <h2 class="mt-14">Domain aliases with symbolic links</h2>
+          <p>Use links when a project lives outside a parked path, or when you want a second domain for it.</p>
+          <code-panel label="Links" lang="bash"><pre><code>valet link                 # link current directory using its folder name
+valet link yourproject2    # create yourproject2.test
+valet links                # list URL, SSL and target path
+valet unlink yourproject2  # remove the link</code></pre></code-panel>
+
+          <h2 class="mt-14">Customise the domain and ports</h2>
+          <code-panel label="Domain &amp; ports" lang="bash"><pre><code>valet domain            # show the current domain (default: test)
+valet domain local      # switch to *.local and re-secure sites
+valet port              # show HTTP and HTTPS ports (80 / 443)
+valet port 8080         # change the HTTP port
+valet port 8443 --https # change the HTTPS port</code></pre></code-panel>
+          <p>Changing the domain automatically re-issues secured site certificates. Changing a port regenerates secure configs and restarts Nginx and PHP-FPM.</p>
+
+          <div class="callout border-sky-200 bg-sky-50 text-sky-900 dark:border-sky-900/60 dark:bg-sky-950/20 dark:text-sky-100">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01" stroke-linecap="round"/></svg>
+            <div><span class="callout-title">Automatic cleanup</span>On every command Valet prunes stale links and paths that no longer exist, so the table stays accurate when you delete projects.</div>
+          </div>
+        </section>
+
+        <!-- ============================= SECURING SITES ============================= -->
+        <section id="section-securing-sites" v-show="active === 'securing-sites'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Guides</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Securing sites with TLS</h1>
+          <p class="lead mt-4 text-lg">Sites are served over HTTP by default. One command gives a site a trusted local TLS certificate and HTTP/2 support.</p>
+
+          <h2 class="mt-12">Secure and unsecure</h2>
+          <code-panel label="TLS" lang="bash"><pre><code>valet secure example        # https://example.test with a trusted cert
+valet secured example       # check whether a site is secured
+valet unsecure example      # back to plain HTTP, certificate removed</code></pre></code-panel>
+          <p>Running <code>valet secure</code> or <code>valet unsecure</code> without a domain uses the current directory's name. Certificates are stored in <code>~/.config/valet/Certificates</code> with the local CA in <code>~/.config/valet/CA</code>.</p>
+
+          <h2 class="mt-14">Certificate lifecycle</h2>
+          <ul>
+            <li><code>valet domain newdomain</code> re-secures every site for the new TLD automatically.</li>
+            <li><code>valet port 8443 --https</code> regenerates all secured site configs for the new HTTPS port.</li>
+            <li><code>valet proxy domain http://host --secure</code> creates a secured proxy with a trusted certificate.</li>
+            <li><code>valet isolate 7.4 --secure</code> creates an isolated site with TLS enabled.</li>
+          </ul>
+
+          <h2 class="mt-14">Browser trust</h2>
+          <p>The generated CA must be trusted by your browser for the green padlock. On Firefox you may need to add the CA manually; older Ubuntu releases require the nginx PPA for HTTP/2 as noted in <a href="#" @click.prevent="go('requirements')">Requirements</a>.</p>
+
+          <div class="callout border-brand-200 bg-brand-50/70 text-brand-900 dark:border-brand-900 dark:bg-brand-950/30 dark:text-brand-100">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+            <div><span class="callout-title">Where configs live</span>Per-site Nginx configs — plain, secured, isolated and proxy variants — are written to <code>~/.config/valet/Nginx</code> and included by the main Valet Nginx config.</div>
+          </div>
+        </section>
+
+        <!-- ============================= PROXY ============================= -->
+        <section id="section-proxy" v-show="active === 'proxy'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Guides</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Proxying local ports</h1>
+          <p class="lead mt-4 text-lg">Preview a Node, Docker, Vite or any other local service on a friendly <code>.test</code> hostname — optionally with HTTPS.</p>
+
+          <h2 class="mt-12">Create a proxy</h2>
+          <code-panel label="Proxy a Node app" lang="bash"><pre><code>valet proxy test http://localhost:3000
+# http://test.test now forwards to localhost:3000</code></pre></code-panel>
+          <p>The <code>host</code> must be a valid <code>http://</code> or <code>https://</code> URL. If the domain does not already end with your Valet TLD it is appended for you.</p>
+          <code-panel label="Secured proxy" lang="bash"><pre><code>valet proxy api http://127.0.0.1:8080 --secure
+# https://api.test → http://127.0.0.1:8080 with trusted TLS</code></pre></code-panel>
+
+          <h2 class="mt-14">List and remove</h2>
+          <code-panel label="Manage proxies" lang="bash"><pre><code>valet proxies               # table of URL, SSL and host
+valet unproxy test          # remove the proxy (and its cert)</code></pre></code-panel>
+
+          <table class="doc-table"><thead><tr><th>Command</th><th>Description</th></tr></thead><tbody>
+            <tr><td><code>valet proxy [domain] [host] [--secure]</code></td><td>Create an Nginx proxy site for the given host.</td></tr>
+            <tr><td><code>valet unproxy [domain]</code></td><td>Delete the Nginx proxy config and any TLS certificate.</td></tr>
+            <tr><td><code>valet proxies</code></td><td>Display all proxy sites with their SSL state.</td></tr>
+          </tbody></table>
+        </section>
+
+        <!-- ============================= PHP VERSIONS ============================= -->
+        <section id="section-php-versions" v-show="active === 'php-versions'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">PHP</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Switching PHP versions</h1>
+          <p class="lead mt-4 text-lg">Change the PHP version used by the whole environment, or keep global PHP untouched and isolate a single site.</p>
+
+          <div class="callout border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/20 dark:text-amber-100">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke-linejoin="round"/></svg>
+            <div><span class="callout-title">Add a PHP repository first</span>Valet downloads PHP versions through your distribution's extra repository. Without it, <code>valet use</code> cannot install the requested version.</div>
+          </div>
+
+          <h2 class="mt-12">Supported versions</h2>
+          <table class="doc-table"><thead><tr><th>Scope</th><th>Versions</th><th>Command</th></tr></thead><tbody>
+            <tr><td>Global FPM</td><td>8.2, 8.3, 8.4, 8.5</td><td><code>valet use</code></td></tr>
+            <tr><td>Per-site isolation</td><td>7.0, 7.1, 7.2, 7.3, 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, 8.5</td><td><code>valet isolate</code></td></tr>
+          </tbody></table>
+          <p class="text-sm text-ink-500">Older documentation mentions only 8.2 and 8.3 for <code>valet use</code>; the current 2.0.x source accepts 8.2 through 8.5. Anything older belongs in an isolated site.</p>
+
+          <h2 class="mt-14">Add the PHP repository</h2>
+          <code-panel label="Ubuntu (ondrej/php PPA)" lang="bash"><pre><code>sudo add-apt-repository ppa:ondrej/php
+sudo apt-get update</code></pre></code-panel>
+          <p class="mt-4">For Arch Linux, edit <code>/etc/pacman.conf</code> and add the repository <em>before</em> others that provide PHP:</p>
+          <code-panel label="/etc/pacman.conf" lang="ini"><pre><code>[home_el_archphp_Arch]
+Server = https://download.opensuse.org/repositories/home:/el:/archphp/Arch/$arch</code></pre></code-panel>
+
+          <h2 class="mt-14">Switch the global version</h2>
+          <code-panel lang="bash"><pre><code>valet use 8.2                 # switch PHP-FPM for all sites
+valet use 8.3 --update-cli    # also switch the default CLI PHP
+valet use 8.4 --ignore-ext    # use the selected version's extensions
+valet use                     # reset to the system default PHP</code></pre></code-panel>
+          <p>The <code>--update-cli</code> flag keeps your terminal's <code>php -v</code> in sync with the web server. The installer can also link a helper at <code>/usr/local/bin/php</code> that follows isolated directories automatically.</p>
+
+          <h2 class="mt-14">Configuration locations</h2>
+          <ul>
+            <li>FPM config: <code>/etc/php/{version}/fpm/pool.d/valet.conf</code></li>
+            <li>php.ini: <code>/etc/php/{version}/fpm/php.ini</code></li>
+            <li>Valet sockets: <code>valet8.2.sock</code>, <code>valet8.3.sock</code>, … (one per version)</li>
+          </ul>
+          <p>Need an older version for one project? Continue with the <a href="#" @click.prevent="go('isolation')">isolation guide</a>.</p>
+        </section>
+
+        <!-- ============================= ISOLATION ============================= -->
+        <section id="section-isolation" v-show="active === 'isolation'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">PHP</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Isolating PHP versions</h1>
+          <p class="lead mt-4 text-lg">Run a legacy project on PHP 7.4 while the rest of your machine stays on 8.3. Isolation creates a dedicated FPM pool and Nginx config for one site.</p>
+
+          <h2 class="mt-12">Isolate a site</h2>
+          <code-panel label="Full syntax" lang="bash"><pre><code>valet isolate {phpVersion} --site={siteName} --secure</code></pre></code-panel>
+          <table class="doc-table"><thead><tr><th>Argument / option</th><th>Meaning</th></tr></thead><tbody>
+            <tr><td><code>phpVersion</code></td><td>Version to use, e.g. <code>php@7.4</code> or <code>7.4</code>.</td></tr>
+            <tr><td><code>--site=</code></td><td>Site name when it differs from the directory name.</td></tr>
+            <tr><td><code>--secure</code></td><td>Serve the isolated site over HTTPS with a trusted certificate.</td></tr>
+          </tbody></table>
+          <code-panel label="Examples" lang="bash"><pre><code>valet isolate php@7.4 --site=example.test --secure
+cd ~/sites/legacy &amp;&amp; valet isolate 7.4</code></pre></code-panel>
+
+          <h2 class="mt-14">List and remove isolation</h2>
+          <code-panel lang="bash"><pre><code>valet isolated                      # URL | SSL | PHP version
+valet unisolate                     # current directory back to default PHP
+valet unisolate --site=example.test # named site back to default</code></pre></code-panel>
+
+          <h2 class="mt-14">Pin a version in the project</h2>
+          <p>Add a <code>.valetphprc</code> file to the site root so future <code>valet isolate</code> calls (with no version argument) and <code>valet which-php</code> pick it up automatically.</p>
+          <code-panel label="~/.sites/legacy/.valetphprc" lang="text"><pre><code>php@7.4</code></pre></code-panel>
+
+          <h2 class="mt-14">Run PHP and Composer with the site's version</h2>
+          <p>The <code>valet</code> wrapper proxies these commands through the PHP binary resolved for the current (or given) site:</p>
+          <code-panel lang="bash"><pre><code>valet php -v                      # PHP version of this site
+valet php --site=legacy artisan   # explicit site
+valet composer install            # Composer with that site's PHP
+valet composer --site=legacy update
+valet which-php                   # print the executable path</code></pre></code-panel>
+
+          <div class="callout border-brand-200 bg-brand-50/70 text-brand-900 dark:border-brand-900 dark:bg-brand-950/30 dark:text-brand-100">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18" stroke-linecap="round"/></svg>
+            <div><span class="callout-title">v2 addition</span>Isolation was introduced as a first-class feature in Valet Linux+ 2.0. The <code>valet use</code> command deliberately refuses older versions and points you here instead.</div>
+          </div>
+        </section>
+
+        <!-- ============================= DATABASE ============================= -->
+        <section id="section-database" v-show="active === 'database'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Data &amp; services</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Databases</h1>
+          <p class="lead mt-4 text-lg">Valet installs MySQL 5.7 with 5.6 compatibility mode and a tuned <code>my.cnf</code>, or MariaDB if you prefer. Both get a dedicated <code>valet</code> user.</p>
+
+          <h2 class="mt-12">Initial configuration</h2>
+          <code-panel label="Choose MariaDB at install time" lang="bash"><pre><code>valet install --mariadb
+valet db:configure          # set up / reconfigure the valet DB user
+valet db:configure --force  # reconfigure even if already set</code></pre></code-panel>
+          <p>During configuration you supply the database root password; Valet creates a <code>valet</code>@<code>localhost</code> user with all privileges and stores the credentials in its config.</p>
+
+          <h2 class="mt-14">Every database command</h2>
+          <table class="doc-table"><thead><tr><th>Command</th><th>Description</th></tr></thead><tbody>
+            <tr><td><code>valet db:list</code></td><td>List all databases.</td></tr>
+            <tr><td><code>valet db:create [name]</code></td><td>Create a database.</td></tr>
+            <tr><td><code>valet db:drop [name] [-y|--yes]</code></td><td>Drop a database (confirmation prompt unless <code>-y</code>).</td></tr>
+            <tr><td><code>valet db:reset [name] [-y|--yes]</code></td><td>Drop and recreate a database.</td></tr>
+            <tr><td><code>valet db:import [name] [dump]</code></td><td>Import a <code>.sql</code> or <code>.sql.gz</code> dump with a progress bar.</td></tr>
+            <tr><td><code>valet db:export [name] [--sql]</code></td><td>Export a gzipped dump, or plain SQL with <code>--sql</code>.</td></tr>
+            <tr><td><code>valet db:configure [--force]</code></td><td>Configure the Valet database user.</td></tr>
+          </tbody></table>
+
+          <h2 class="mt-14">Name resolution</h2>
+          <p>When you omit the database name, Valet tries the closest Git repository directory name first, then falls back to the current working directory name.</p>
+          <code-panel lang="bash"><pre><code>cd ~/sites/blog
+valet db:create       # creates database "blog"
+valet db:drop blog -y
+valet db:reset blog --yes
+valet db:export blog            # blog.sql.gz
+valet db:export blog --sql      # blog.sql
+valet db:import blog backup.sql.gz</code></pre></code-panel>
+
+          <div class="callout border-sky-200 bg-sky-50 text-sky-900 dark:border-sky-900/60 dark:bg-sky-950/20 dark:text-sky-100">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01" stroke-linecap="round"/></svg>
+            <div><span class="callout-title">v1 command removed</span><code>valet db:password &lt;old&gt; &lt;new&gt;</code> existed in 1.x. In v2 use <code>valet db:configure --force</code> to set credentials again.</div>
+          </div>
+        </section>
+
+        <!-- ============================= MAILPIT ============================= -->
+        <section id="section-mailpit" v-show="active === 'mailpit'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Data &amp; services</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Mailpit</h1>
+          <p class="lead mt-4 text-lg">Catch every email your application sends, without sending it anywhere. Mailpit replaced MailHog in Valet 1.6.5 and is installed by default.</p>
+
+          <h2 class="mt-12">Open the inbox</h2>
+          <p>Visit <a href="#" @click.prevent> http://mails.test</a> in your browser. Start or stop the service with:</p>
+          <code-panel lang="bash"><pre><code>valet start mailpit
+valet stop mailpit
+valet restart mailpit</code></pre></code-panel>
+
+          <h2 class="mt-14">Application configuration</h2>
+          <code-panel label=".env" lang="text"><pre><code>MAIL_MAILER=smtp
+MAIL_HOST=0.0.0.0
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null</code></pre></code-panel>
+          <p>No authentication is required. Messages stay local and can be inspected, searched and deleted from the web panel.</p>
+        </section>
+
+        <!-- ============================= REDIS ============================= -->
+        <section id="section-redis" v-show="active === 'redis'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Data &amp; services</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Redis</h1>
+          <p class="lead mt-4 text-lg">Redis is installed automatically and ready for caches, queues and sessions.</p>
+
+          <div class="mt-10 grid gap-4 sm:grid-cols-3">
+            <div class="surface p-5"><p class="text-xs text-ink-400">TCP port</p><p class="mt-1 font-mono text-xl font-bold text-ink-900 dark:text-white">6379</p></div>
+            <div class="surface p-5"><p class="text-xs text-ink-400">Unix socket</p><p class="mt-1 font-mono text-sm font-bold text-ink-900 dark:text-white">/tmp/redis.sock</p></div>
+            <div class="surface p-5"><p class="text-xs text-ink-400">Service name</p><p class="mt-1 font-mono text-xl font-bold text-ink-900 dark:text-white">redis</p></div>
+          </div>
+
+          <h2 class="mt-12">Control the service</h2>
+          <code-panel lang="bash"><pre><code>valet start redis
+valet stop redis
+valet restart redis
+valet start          # start every service, including Redis</code></pre></code-panel>
+          <p>Package-specific handling exists for apt, dnf, yum, pacman, eopkg and PackageKit so the correct service name is used on each distribution.</p>
+        </section>
+
+        <!-- ============================= SHARING ============================= -->
+        <section id="section-sharing" v-show="active === 'sharing'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Guides</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Sharing sites publicly</h1>
+          <p class="lead mt-4 text-lg">Expose a local site to the internet with an ngrok tunnel — or reach your machine over the LAN.</p>
+
+          <h2 class="mt-12">ngrok setup</h2>
+          <p>Create a free ngrok account, then store your authtoken. Valet checks for ngrok's config before opening a tunnel.</p>
+          <code-panel lang="bash"><pre><code>valet ngrok-auth YOUR_AUTHTOKEN
+valet share
+valet fetch-share-url    # print the current public URL</code></pre></code-panel>
+          <p>The ngrok v3 binary is downloaded by <code>valet install</code> into Valet's <code>bin</code> directory. Legacy <code>~/.ngrok2/ngrok.yml</code> configs are upgraded to <code>~/.config/ngrok/ngrok.yml</code> automatically.</p>
+          <p>The wrapper resolves symlinked site names, detects secured sites (port 88 fallback) and starts ngrok with <code>--host-header=rewrite</code>.</p>
+
+          <h2 class="mt-14">LAN access</h2>
+          <p>In v1.x, all sites were reachable from other devices on the network using your machine's IP address and the <code>/valet-sites</code> directory listing:</p>
+          <code-panel label="Legacy v1 behaviour" lang="text"><pre><code>http://&lt;local-ip-address&gt;/valet-sites</code></pre></code-panel>
+          <div class="callout border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/20 dark:text-amber-100">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke-linejoin="round"/></svg>
+            <div><span class="callout-title">Removed in v2.0</span><code>/valet-sites</code> was removed in Valet Linux+ 2.0 and may return in a future release. Use <code>valet share</code> for remote access today. LAN access also could not serve TLS certificates because the hostname differs.</div>
+          </div>
+        </section>
+
+        <!-- ============================= IDE SUPPORT ============================= -->
+        <section id="section-ide-support" v-show="active === 'ide-support'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Development</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">IDE shortcuts</h1>
+          <p class="lead mt-4 text-lg">Open the current project — or a specific folder — in your favourite editor without leaving the terminal.</p>
+          <table class="doc-table"><thead><tr><th>Command</th><th>Editor</th></tr></thead><tbody>
+            <tr><td><code>valet ps [folder]</code></td><td>PhpStorm</td></tr>
+            <tr><td><code>valet code [folder]</code></td><td>Visual Studio Code</td></tr>
+            <tr><td><code>valet atom [folder]</code></td><td>Atom</td></tr>
+            <tr><td><code>valet subl [folder]</code></td><td>Sublime Text</td></tr>
+          </tbody></table>
+          <code-panel lang="bash"><pre><code>cd ~/sites/blog &amp;&amp; valet code
+valet ps ~/sites/other-project</code></pre></code-panel>
+          <p>When no folder is given, the current working directory is used. These helpers were added in 1.5.6 (VS Code support arrived in 1.5.8).</p>
+        </section>
+
+        <!-- ============================= DRIVERS ============================= -->
+        <section id="section-drivers" v-show="active === 'drivers'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Extending Valet</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Valet drivers</h1>
+          <p class="lead mt-4 text-lg">Drivers decide how a request is interpreted. Valet picks the right one automatically for each directory; <code>valet which</code> tells you which was chosen.</p>
+
+          <h2 class="mt-12">Bundled drivers</h2>
+          <p>The source tree ships dedicated driver classes for the following frameworks and CMSs:</p>
+          <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+            <span v-for="d in builtinDrivers" :key="d" class="rounded-lg border border-ink-200 bg-white px-3 py-2 text-center text-[13px] font-medium dark:border-ink-800 dark:bg-ink-900/50">{{ d }}</span>
+          </div>
+          <p class="mt-5">The official documentation additionally lists CakePHP 3, Craft, Drupal, Jigsaw, Laravel, Lumen, Magento, Magento 2, Neos, Pimcore 5, Shopware 5, Slim, Statamic, Static HTML, Symfony, Typo3, WordPress/Bedrock and Zend Framework. Generic <code>BasicValetDriver</code> and <code>BasicWithPublicValetDriver</code> classes handle plain PHP and <code>public/</code> layouts.</p>
+
+          <h2 class="mt-14">Driver resolution</h2>
+          <p>Drivers are loaded from the core driver set, optional community packages and your configuration directory. Specific drivers are tried before generic ones.</p>
+          <code-panel lang="bash"><pre><code>cd ~/sites/my-laravel-app
+valet which
+# This site is served by [Valet\Drivers\Specific\LaravelValetDriver].</code></pre></code-panel>
+
+          <div class="callout border-brand-200 bg-brand-50/70 text-brand-900 dark:border-brand-900 dark:bg-brand-950/30 dark:text-brand-100">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 9 5-9 5-9-5 9-5ZM3 13l9 5 9-5" stroke-linejoin="round"/></svg>
+            <div><span class="callout-title">Not supported yet?</span>Write your own global driver or a project-local driver — see the <a href="#" @click.prevent="go('custom-drivers')">custom drivers guide</a>.</div>
+          </div>
+        </section>
+
+        <!-- ============================= CUSTOM DRIVERS ============================= -->
+        <section id="section-custom-drivers" v-show="active === 'custom-drivers'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Extending Valet</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Custom Valet drivers</h1>
+          <p class="lead mt-4 text-lg">Serve any PHP framework or CMS by implementing three methods: <code>serves</code>, <code>isStaticFile</code> and <code>frontControllerPath</code>.</p>
+
+          <h2 class="mt-12">Where to put a driver</h2>
+          <p>A sample driver is created during installation. In v2 place global drivers in <code>~/.config/valet/Drivers</code> (v1 used <code>~/.valet/Drivers</code>), named <code>FrameworkValetDriver.php</code>. For a single app, create <code>LocalValetDriver.php</code> in the project root.</p>
+
+          <h2 class="mt-14">The three methods</h2>
+          <p>All three receive <code>$sitePath</code> (absolute path), <code>$siteName</code> (host portion, e.g. <code>my-project</code>) and <code>$uri</code> (e.g. <code>/foo/bar</code>).</p>
+
+          <h3>serves()</h3>
+          <p>Return <code>true</code> when this driver should handle the request.</p>
+          <code-panel label="WordPressValetDriver.php" lang="php"><pre><code>public function serves($sitePath, $siteName, $uri)
+{
+    return is_dir($sitePath.'/wp-admin');
+}</code></pre></code-panel>
+
+          <h3>isStaticFile()</h3>
+          <p>Return the absolute path for static assets, otherwise <code>false</code>. Called only when <code>serves()</code> is true and the URI is not <code>/</code>.</p>
+          <code-panel lang="php"><pre><code>public function isStaticFile($sitePath, $siteName, $uri)
+{
+    if (file_exists($staticFilePath = $sitePath.'/public/'.$uri)) {
+        return $staticFilePath;
+    }
+
+    return false;
+}</code></pre></code-panel>
+
+          <h3>frontControllerPath()</h3>
+          <p>Return the absolute path to the application's front controller.</p>
+          <code-panel lang="php"><pre><code>public function frontControllerPath($sitePath, $siteName, $uri)
+{
+    return $sitePath.'/public/index.php';
+}</code></pre></code-panel>
+
+          <h2 class="mt-14">Local driver example</h2>
+          <p>A local driver can extend a built-in driver and override only what differs:</p>
+          <code-panel label="LocalValetDriver.php" lang="php"><pre><code>class LocalValetDriver extends LaravelValetDriver
+{
+    public function serves($sitePath, $siteName, $uri)
+    {
+        return true;
+    }
+
+    public function frontControllerPath($sitePath, $siteName, $uri)
+    {
+        return $sitePath.'/public_html/index.php';
+    }
+}</code></pre></code-panel>
+          <p>Verify detection with <code>valet which</code> after creating the file. No restart is required for local drivers.</p>
+        </section>
+
+        <!-- ============================= SERVICES ============================= -->
+        <section id="section-services" v-show="active === 'services'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Reference</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Service management</h1>
+          <p class="lead mt-4 text-lg">Start, stop and restart the whole stack or just one component. The <code>valet</code> wrapper elevates these commands with sudo automatically.</p>
+
+          <h2 class="mt-12">Service names</h2>
+          <table class="doc-table"><thead><tr><th>Name</th><th>Service</th><th>Start / Restart</th><th>Stop</th></tr></thead><tbody>
+            <tr v-for="s in serviceTable" :key="s[0]"><td><code>{{ s[0] }}</code></td><td>{{ s[1] }}</td><td>{{ s[2] }}</td><td>{{ s[3] }}</td></tr>
+          </tbody></table>
+          <p>All services respond to <code>valet start</code>, <code>valet restart</code> and <code>valet stop</code> when no name is given — except Dnsmasq, which has no <code>stop</code> branch (use <code>valet restart dnsmasq</code>).</p>
+
+          <h2 class="mt-14">Commands</h2>
+          <code-panel lang="bash"><pre><code>valet start                 # every service
+valet start nginx php redis # selected services
+valet restart mysql
+valet stop mailpit
+valet status                # PHP-FPM + Nginx status
+valet update                # self-update and clean up cruft
+valet is-latest             # YES / NO
+valet uninstall             # remove Valet services and config</code></pre></code-panel>
+
+          <div class="callout border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/20 dark:text-amber-100">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2" stroke-linecap="round"/></svg>
+            <div><span class="callout-title">Updates</span><code>valet update</code> checks GitHub for the latest release, downloads it, and runs the cleanup script. After a major upgrade, follow the <a href="#" @click.prevent="go('upgrade')">upgrade guide</a>.</div>
+          </div>
+        </section>
+
+        <!-- ============================= CONFIGURATION ============================= -->
+        <section id="section-configuration" v-show="active === 'configuration'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Reference</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Configuration &amp; files</h1>
+          <p class="lead mt-4 text-lg">Valet keeps its own state under your user config directory and writes service configs into the system as needed.</p>
+
+          <h2 class="mt-12">The Valet home directory</h2>
+          <p>Since v2.0 the home directory is <code>~/.config/valet</code>. The v1 <code>~/.valet</code> directory is migrated automatically on first run.</p>
+          <table class="doc-table"><thead><tr><th>Path</th><th>Contents</th></tr></thead><tbody>
+            <tr><td><code>~/.config/valet/config.json</code></td><td>Main configuration: domain, paths and port.</td></tr>
+            <tr><td><code>~/.config/valet/Sites/</code></td><td>Symbolic links created by <code>valet link</code>.</td></tr>
+            <tr><td><code>~/.config/valet/Nginx/</code></td><td>Per-site Nginx configs (plain, secured, isolated, proxy).</td></tr>
+            <tr><td><code>~/.config/valet/Certificates/</code></td><td>TLS certificates generated by <code>valet secure</code>.</td></tr>
+            <tr><td><code>~/.config/valet/CA/</code></td><td>Local certificate authority files.</td></tr>
+            <tr><td><code>~/.config/valet/Drivers/</code></td><td>Your global custom drivers.</td></tr>
+            <tr><td><code>~/.config/valet/Log/</code></td><td>Nginx, PHP and MySQL logs.</td></tr>
+            <tr><td><code>~/.config/valet/bin/</code></td><td>Downloaded ngrok binary.</td></tr>
+          </tbody></table>
+
+          <h2 class="mt-14">Default configuration</h2>
+          <code-panel label="~/.config/valet/config.json" lang="json"><pre><code>{
+  "domain": "test",
+  "paths": [],
+  "port": "80"
+}</code></pre></code-panel>
+          <p>A <code>https_port</code> key is added when you run <code>valet port &lt;n&gt; --https</code>. Use <code>valet domain</code> and <code>valet port</code> to read values instead of editing the file by hand.</p>
+
+          <h2 class="mt-14">System locations</h2>
+          <ul>
+            <li>Global Nginx config stubs: Valet's <code>stubs/</code> directory (<code>nginx.conf</code>, <code>valet.conf</code>, <code>secure.valet.conf</code>, <code>proxy.valet.conf</code>, isolated variants).</li>
+            <li>PHP-FPM pool: <code>/etc/php/{version}/fpm/pool.d/valet.conf</code></li>
+            <li>php.ini: <code>/etc/php/{version}/fpm/php.ini</code></li>
+            <li>Dnsmasq config: <code>/etc/dnsmasq.conf</code> with Valet's <code>.test</code> rule.</li>
+            <li>Resolver / NetworkManager stubs are installed to keep DNS pointed at localhost.</li>
+          </ul>
+
+          <h2 class="mt-14">Environment files</h2>
+          <p>Valet's CLI defines <code>VALET_HOME_PATH</code>, <code>VALET_ROOT_PATH</code> and related constants at startup based on your home directory and installation location. Extensions can be dropped into the config directory and are loaded on every command.</p>
+        </section>
+
+        <!-- ============================= UPGRADE ============================= -->
+        <section id="section-upgrade" v-show="active === 'upgrade'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Reference</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Upgrade guide (v1 → v2)</h1>
+          <p class="lead mt-4 text-lg">Version 2.0 is a major refactor. Follow these steps for a smooth transition.</p>
+
+          <h2 class="mt-12">Requirements</h2>
+          <p>PHP 8.2 or higher with the required extensions:</p>
+          <code-panel label="Ubuntu example" lang="bash"><pre><code>sudo apt install php8.2-cli php8.2-common php8.2-curl php8.2-mbstring \
+  php8.2-opcache php8.2-readline php8.2-xml php8.2-zip php8.2-mysql php8.2-gd</code></pre></code-panel>
+
+          <h2 class="mt-14">Major changes</h2>
+          <table class="doc-table"><thead><tr><th>Area</th><th>Change</th></tr></thead><tbody>
+            <tr><td>Home directory</td><td>Moved from <code>~/.valet</code> to <code>~/.config/valet</code>, migrated automatically.</td></tr>
+            <tr><td>Isolation</td><td>New <code>valet isolate</code>, <code>valet isolated</code>, <code>valet unisolate</code> commands.</td></tr>
+            <tr><td><code>valet use</code></td><td>No longer installs older PHP; only 8.2+ (current source: 8.2–8.5).</td></tr>
+            <tr><td>PHP helper</td><td><code>/usr/local/bin/php</code> runs the isolated version when inside an isolated directory, otherwise the system default.</td></tr>
+            <tr><td>ngrok</td><td>Binary removed from source; installed by <code>valet install</code>.</td></tr>
+            <tr><td>Codebase</td><td>Refactored, with CodeSniffer, CS Fixer and unit tests for all commands.</td></tr>
+          </tbody></table>
+
+          <h2 class="mt-14">Minor changes &amp; removals</h2>
+          <ul>
+            <li>Termwind and console-components improve terminal output.</li>
+            <li><code>/valet-sites</code> LAN listing removed (may return later).</li>
+            <li>Subdomain commands removed — equivalent to <code>valet link</code> in v2.</li>
+            <li>Laravel 11 and 12 both supported as of 2.0.3.</li>
+          </ul>
+
+          <h2 class="mt-14">Upgrade steps</h2>
+          <code-panel label="1 — update the package" lang="bash"><pre><code>composer global require genesisweb/valet-linux-plus:v2.0.1 -W</code></pre></code-panel>
+          <code-panel label="2 — run migration" lang="bash"><pre><code>valet</code></pre></code-panel>
+          <code-panel label="3 — finish installation" lang="bash"><pre><code>valet install</code></pre></code-panel>
+          <p>Afterwards verify with <code>valet status</code> and <code>valet links</code>. Use <a href="#" @click.prevent="go('isolation')">isolation</a> for legacy PHP projects.</p>
+        </section>
+
+        <!-- ============================= COMMANDS ============================= -->
+        <section id="section-commands" v-show="active === 'commands'" class="animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Reference</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl dark:text-white">Command reference</h1>
+          <p class="mt-4 max-w-3xl text-lg leading-8 text-ink-600 dark:text-ink-400">All {{ commands.length }} commands exposed by Valet Linux+ {{ version }} — filter by category or search by name, option or description.</p>
+
+          <div class="surface mt-8 p-4 sm:p-5">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <div class="relative flex-1">
+                <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <input v-model="commandQuery" type="search" placeholder="Try: isolate, db:export, --secure…" class="w-full rounded-xl border border-ink-200 bg-white py-2.5 pl-10 pr-3 text-sm outline-none transition placeholder:text-ink-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-100 dark:border-ink-700 dark:bg-ink-900 dark:focus:ring-brand-950">
+              </div>
+              <span class="shrink-0 text-sm text-ink-500">Showing <strong class="text-ink-900 dark:text-white">{{ filteredCommands.length }}</strong> / {{ commands.length }}</span>
+            </div>
+            <div class="mt-4 flex flex-wrap gap-2">
+              <button v-for="cat in commandCategories" :key="cat" @click="commandCategory = cat"
+                class="rounded-lg px-3 py-1.5 text-xs font-semibold transition"
+                :class="commandCategory === cat ? 'bg-brand-600 text-white' : 'bg-ink-100 text-ink-600 hover:bg-ink-200 dark:bg-ink-800 dark:text-ink-300 dark:hover:bg-ink-700'">
+                {{ cat }}
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-6 overflow-hidden rounded-2xl border border-ink-200 dark:border-ink-800">
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[760px] text-left text-sm">
+                <thead class="bg-ink-50 dark:bg-ink-900"><tr><th class="px-4 py-3 text-xs font-bold uppercase tracking-wider text-ink-500">Command</th><th class="px-4 py-3 text-xs font-bold uppercase tracking-wider text-ink-500">Options / arguments</th><th class="px-4 py-3 text-xs font-bold uppercase tracking-wider text-ink-500">Description</th></tr></thead>
+                <tbody class="divide-y divide-ink-200 bg-white dark:divide-ink-800 dark:bg-ink-950">
+                  <tr v-for="cmd in filteredCommands" :key="cmd.cmd" class="hover:bg-brand-50/50 dark:hover:bg-brand-950/10">
+                    <td class="whitespace-nowrap px-4 py-3 align-top"><code class="rounded-md bg-brand-50 px-2 py-1 text-[12px] font-bold text-brand-700 dark:bg-brand-950/50 dark:text-brand-300">{{ cmd.cmd }}</code></td>
+                    <td class="px-4 py-3 align-top"><span class="font-mono text-[11px] text-ink-500">{{ cmd.syntax || '—' }}</span></td>
+                    <td class="px-4 py-3 align-top text-ink-600 dark:text-ink-400">{{ cmd.desc }}</td>
+                  </tr>
+                  <tr v-if="!filteredCommands.length"><td colspan="3" class="px-4 py-10 text-center text-sm text-ink-500">No commands match that search.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <h2 class="mt-14">Cheat sheet</h2>
+          <code-panel label="A typical day" lang="bash"><pre><code>valet install                      # once
+cd ~/sites &amp;&amp; valet park             # once per projects root
+cd my-app &amp;&amp; valet link              # optional alias
+valet secure                       # HTTPS for this site
+valet use 8.3 --update-cli         # global PHP
+valet isolate php@7.4 --secure     # legacy project
+valet db:create                    # database named after the folder
+valet db:import my_app dump.sql.gz
+valet start mailpit                # catch outgoing mail
+valet proxy app http://localhost:3000 --secure
+valet share                        # public ngrok URL
+valet status                       # health check</code></pre></code-panel>
+
+          <h2 class="mt-14">Legacy commands (v1.x only)</h2>
+          <table class="doc-table"><thead><tr><th>Command</th><th>Replacement in v2</th></tr></thead><tbody>
+            <tr><td><code>valet db:password &lt;old&gt; &lt;new&gt;</code></td><td><code>valet db:configure --force</code></td></tr>
+            <tr><td><code>valet subdomain:list</code></td><td><code>valet links</code></td></tr>
+            <tr><td><code>valet subdomain:add &lt;name&gt;</code></td><td><code>valet link &lt;name&gt;</code></td></tr>
+          </tbody></table>
+        </section>
+
+        <!-- ============================= CHANGELOG ============================= -->
+        <section id="section-changelog" v-show="active === 'changelog'" class="animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Reference</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl dark:text-white">Release notes</h1>
+          <p class="mt-4 text-lg text-ink-600 dark:text-ink-400">A selection of releases from the project's history, newest first.</p>
+          <div class="mt-9 space-y-5">
+            <article v-for="rel in releases" :key="rel.version" class="surface p-5 sm:p-6">
+              <div class="flex flex-wrap items-center gap-3">
+                <span class="badge bg-brand-100 font-mono text-brand-700 dark:bg-brand-950/60 dark:text-brand-300">v{{ rel.version }}</span>
+                <span class="text-xs text-ink-400">{{ rel.date }}</span>
+                <span v-if="rel.tag" class="badge bg-ink-100 text-ink-500 dark:bg-ink-800 dark:text-ink-400">{{ rel.tag }}</span>
+              </div>
+              <h2 class="mt-3 !text-lg font-bold">{{ rel.title }}</h2>
+              <ul class="mt-3 space-y-1.5 text-sm text-ink-600 dark:text-ink-400"><li v-for="point in rel.points" :key="point">— {{ point }}</li></ul>
+            </article>
+          </div>
+          <p class="mt-8 text-sm">Full history: <a href="https://github.com/genesisweb/valet-linux-plus/releases" target="_blank" rel="noopener">github.com/genesisweb/valet-linux-plus/releases</a></p>
+        </section>
+
+        <!-- ============================= TROUBLESHOOTING ============================= -->
+        <section id="section-troubleshooting" v-show="active === 'troubleshooting'" class="animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Reference</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl dark:text-white">Troubleshooting &amp; FAQ</h1>
+          <p class="mt-4 text-lg text-ink-600 dark:text-ink-400">Answers to the questions that come up most often.</p>
+
+          <div class="mt-9 space-y-3">
+            <div v-for="(faq, i) in faqs" :key="faq.q" class="surface overflow-hidden">
+              <button @click="openFaq = openFaq === i ? -1 : i" class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold text-ink-900 dark:text-white">
+                <span>{{ faq.q }}</span>
+                <svg class="h-4 w-4 shrink-0 text-brand-500 transition-transform" :class="openFaq === i ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <div v-show="openFaq === i" class="border-t border-ink-200 px-5 py-4 text-sm leading-7 text-ink-600 dark:border-ink-800 dark:text-ink-400" v-html="faq.a"></div>
+            </div>
+          </div>
+
+          <h2 class="mt-14">Useful diagnostics</h2>
+          <code-panel lang="bash"><pre><code>valet status
+valet paths
+valet links
+valet proxies
+valet isolated
+valet which
+valet is-latest
+ls -la ~/.config/valet/Log</code></pre></code-panel>
+        </section>
+
+        <!-- ============================= LICENSE ============================= -->
+        <section id="section-license" v-show="active === 'license'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Reference</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">License &amp; credits</h1>
+          <p class="lead mt-4 text-lg">Valet Linux+ is open-source software released under the MIT License.</p>
+
+          <div class="mt-10 grid gap-6 md:grid-cols-2">
+            <div class="surface p-6">
+              <h2 class="!mt-0 text-lg font-bold">Project authors</h2>
+              <p class="!mt-4 text-xs font-bold uppercase tracking-wider text-sky-700 dark:text-sky-300">Valet Linux (original)</p>
+              <ul>
+                <li><strong>Carlos Priego</strong> and contributors, including Taylor Otwell, Adam Wathan, Leonardo Nodari, Joaquín Marcher and Ludovic Lemarinel.</li>
+              </ul>
+              <p class="mt-4 text-xs font-bold uppercase tracking-wider text-brand-700 dark:text-brand-300">Valet Linux+</p>
+              <ul>
+                <li><strong>Uttam Rabadiya</strong> — <a href="mailto:mail@uttam.dev">mail@uttam.dev</a></li>
+                <li><strong>Divyank Munjapara</strong> — <a href="mailto:mail@divyank.dev">mail@divyank.dev</a></li>
+              </ul>
+              <p class="mt-4 text-sm">Both projects are MIT licensed and built on the work of the Laravel and Linux developer community.</p>
+            </div>
+            <div class="surface p-6">
+              <h2 class="!mt-0 text-lg font-bold">Links</h2>
+              <ul class="!mt-4 break-all">
+                <li><a href="https://github.com/genesisweb/valet-linux-plus" target="_blank" rel="noopener">Linux+ repository</a></li>
+                <li><a href="https://packagist.org/packages/genesisweb/valet-linux-plus" target="_blank" rel="noopener">Linux+ Packagist package</a></li>
+                <li><a href="https://github.com/cpriego/valet-linux" target="_blank" rel="noopener">Original Valet Linux repository</a></li>
+                <li><a href="https://packagist.org/packages/cpriego/valet-linux" target="_blank" rel="noopener">Original Packagist package</a></li>
+                <li><a href="https://cpriego.github.io/valet-linux/" target="_blank" rel="noopener">Original documentation site</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <h2 class="mt-14">MIT License summary</h2>
+          <p>Permission is granted, free of charge, to any person obtaining a copy of this software to use, copy, modify, merge, publish, distribute, sublicense and/or sell copies, provided the copyright notice and permission notice are included. The software is provided "as is", without warranty of any kind.</p>
+
+          <div class="callout border-ink-200 bg-ink-50 text-ink-600 dark:border-ink-800 dark:bg-ink-900/60 dark:text-ink-400">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01" stroke-linecap="round"/></svg>
+            <div><span class="callout-title">About this website</span>This documentation site is an independent, static reference built with HTML, Tailwind CSS and Vue.js. All assets — including Vue and Tailwind output — are stored locally; no CDN or external script is loaded at runtime.</div>
+          </div>
+        </section>
+
+
+        <!-- ============================= VALET LINUX OVERVIEW ============================= -->
+        <section id="section-valet-overview" v-show="active === 'valet-overview'" class="animate-fade-up py-10 sm:py-14">
+          <span class="badge bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300">cpriego/valet-linux · {{ legacyVersion }}</span>
+          <h1 class="mt-6 text-4xl font-extrabold leading-[1.1] tracking-tight text-ink-900 sm:text-5xl dark:text-white">The original Valet <span class="bg-gradient-to-r from-sky-500 to-cyan-400 bg-clip-text text-transparent">for Linux.</span></h1>
+          <p class="mt-6 max-w-3xl text-lg leading-8 text-ink-600 dark:text-ink-400">Valet <em>Linux</em> is a Laravel development environment for Linux minimalists. No Vagrant, no <code>/etc/hosts</code> file. It configures Nginx to run in the background, then uses Dnsmasq to point every <code>*.test</code> request at your local projects — using roughly 7&nbsp;MB of RAM.</p>
+
+          <div class="mt-10 grid gap-6 lg:grid-cols-2">
+            <div class="surface p-6">
+              <p class="eyebrow">Out of the box</p>
+              <h2 class="mt-3 !text-xl font-bold">Supported project types</h2>
+              <p class="mt-3 text-sm leading-7 text-ink-600 dark:text-ink-400">The built-in drivers recognize these frameworks and CMSes. Anything else can be added with a <button class="font-bold text-sky-600 hover:underline dark:text-sky-400" @click="go('valet-drivers')">custom driver</button>.</p>
+              <div class="mt-5 flex flex-wrap gap-2">
+                <span v-for="d in legacyDrivers" :key="d" class="badge bg-ink-100 text-ink-600 dark:bg-ink-800 dark:text-ink-300">{{ d }}</span>
+              </div>
+            </div>
+            <div class="surface p-6">
+              <p class="eyebrow">Valet or Homestead?</p>
+              <h2 class="mt-3 !text-xl font-bold">A lighter kind of local</h2>
+              <p class="mt-3 text-sm leading-7 text-ink-600 dark:text-ink-400">Homestead ships a complete Ubuntu virtual machine and automated Nginx configuration. Valet Linux installs PHP and a database <em>on your machine</em> and stays extremely fast. Choose Homestead for a full virtualized environment or Windows; choose Valet when you only need PHP + MySQL and value speed.</p>
+              <div class="mt-5 callout border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100">
+                <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2 20h20L12 3Zm0 6v5m0 3h.01" stroke-linecap="round"/></svg>
+                <div><span class="callout-title">Never install with root</span>The official docs are emphatic: do not run <code>sudo composer global require</code> or install Valet as <code>root</code>. The wrapper uses sudo internally while preserving your <code>$HOME</code>.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-10 grid gap-4 sm:grid-cols-3">
+            <button class="surface p-5 text-left transition hover:border-sky-300 dark:hover:border-sky-800" @click="go('valet-installation')"><p class="text-sm font-bold text-ink-900 dark:text-white">Install →</p><p class="mt-1 text-sm text-ink-500">Composer + <code>valet install</code></p></button>
+            <button class="surface p-5 text-left transition hover:border-sky-300 dark:hover:border-sky-800" @click="go('valet-serving')"><p class="text-sm font-bold text-ink-900 dark:text-white">Serve →</p><p class="mt-1 text-sm text-ink-500">park, link and secure</p></button>
+            <button class="surface p-5 text-left transition hover:border-sky-300 dark:hover:border-sky-800" @click="go('valet-commands')"><p class="text-sm font-bold text-ink-900 dark:text-white">Reference →</p><p class="mt-1 text-sm text-ink-500">All 29 original commands</p></button>
+          </div>
+        </section>
+
+        <!-- ============================= VALET LINUX REQUIREMENTS ============================= -->
+        <section id="section-valet-requirements" v-show="active === 'valet-requirements'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Original project · setup</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Requirements</h1>
+          <p class="lead mt-4 text-lg">The original Valet Linux targets mainstream Linux distributions. Install PHP and its extensions with your package manager before running <code>valet install</code>.</p>
+
+          <div class="mt-8 overflow-x-auto rounded-2xl border border-ink-200 dark:border-ink-800">
+            <table class="w-full min-w-[820px] text-left text-sm">
+              <thead class="bg-ink-50 dark:bg-ink-900"><tr><th class="px-4 py-3 text-xs font-bold uppercase text-ink-500">Distribution</th><th class="px-4 py-3 text-xs font-bold uppercase text-ink-500">Version</th><th class="px-4 py-3 text-xs font-bold uppercase text-ink-500">System packages</th><th class="px-4 py-3 text-xs font-bold uppercase text-ink-500">PHP</th><th class="px-4 py-3 text-xs font-bold uppercase text-ink-500">Extensions</th></tr></thead>
+              <tbody class="divide-y divide-ink-200 dark:divide-ink-800">
+                <tr v-for="r in legacyRequirements" :key="r.distro"><td class="px-4 py-3 font-semibold text-ink-800 dark:text-ink-200">{{ r.distro }}</td><td class="px-4 py-3 text-ink-500">{{ r.versions }}</td><td class="px-4 py-3 font-mono text-[11px] text-ink-500">{{ r.packages }}</td><td class="px-4 py-3 text-ink-500">{{ r.php }}</td><td class="px-4 py-3 text-ink-500">{{ r.extensions }}<br><span class="text-[11px]">Optional: {{ r.optional }}</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 class="mt-14">Package &amp; service managers</h2>
+          <p>The CLI detects the first available manager from this list: <span v-for="(p, i) in legacyPackageManagers" :key="p" class="font-mono text-sm text-sky-700 dark:text-sky-300">{{ p }}<span v-if="i < legacyPackageManagers.length - 1">, </span></span>. Service management is handled by LinuxService or systemd.</p>
+
+          <h2 class="mt-10">Ubuntu notes</h2>
+          <p>Ubuntu 14.04 (Trusty) needs the nginx PPA for HTTP/2 before <code>valet secure</code> will work:</p>
+          <code-panel label="Ubuntu 14.04 HTTPS" lang="bash"><pre><code>sudo add-apt-repository -y ppa:nginx/stable
+sudo apt-get update</code></pre></code-panel>
+          <p class="mt-4">LTS releases receive about four years of support; non-LTS about nine months. Development releases are not recommended for reliable issue reporting.</p>
+
+          <h2 class="mt-10">Fedora &amp; SELinux</h2>
+          <p>Fedora 24+ is supported. Valet changes system files, so SELinux must be understood or put into permissive mode:</p>
+          <code-panel label="SELinux" lang="bash"><pre><code>sudo setenforce 0                 # temporary
+# or edit /etc/selinux/config: SELINUX=permissive
+valet install --ignore-selinux    # skip the pre-flight check</code></pre></code-panel>
+
+          <div class="callout mt-8 border-ink-200 bg-ink-50 text-ink-600 dark:border-ink-800 dark:bg-ink-900/60 dark:text-ink-400">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01" stroke-linecap="round"/></svg>
+            <div><span class="callout-title">Check port 80 first</span>Make sure Apache, Nginx or another process is not already bound to port 80. You can always change it later with <code>valet port 8888</code>.</div>
+          </div>
+        </section>
+
+        <!-- ============================= VALET LINUX INSTALLATION ============================= -->
+        <section id="section-valet-installation" v-show="active === 'valet-installation'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Original project · setup</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Installation</h1>
+          <p class="lead mt-4 text-lg">Valet Linux is a global Composer package. Run Composer as your normal user — the <code>valet</code> shell script requests sudo only for the commands that need it.</p>
+
+          <h2 class="mt-10">Install</h2>
+          <code-panel label="one-time setup" lang="bash"><pre><code>composer global require cpriego/valet-linux
+valet install
+ping -c 1 foobar.test    # should answer from 127.0.0.1</code></pre></code-panel>
+          <p class="mt-4">The installer configures Nginx, PHP-FPM and Dnsmasq, writes the base config and registers the daemon to start on boot. You never need to run <code>valet install</code> again after the first setup.</p>
+
+          <h2 class="mt-10">Change the TLD and the port</h2>
+          <code-panel label="domains & ports" lang="bash"><pre><code>valet domain           # show current TLD (default: test)
+valet domain app       # serve *.app instead
+valet port             # show HTTP and HTTPS ports
+valet port 8888        # change the HTTP port
+valet port 8443 --https</code></pre></code-panel>
+
+          <h2 class="mt-10">Upgrade</h2>
+          <code-panel lang="bash"><pre><code>composer global update
+valet install    # let Valet refresh its config files</code></pre></code-panel>
+
+          <h2 class="mt-10">Uninstall</h2>
+          <p><code>valet uninstall</code> removes the Valet pieces. On Ubuntu, the official guide also recommends cleaning up Dnsmasq/NetworkManager and restoring <code>systemd-resolved</code>:</p>
+          <code-panel label="Ubuntu cleanup" lang="bash"><pre><code>rm -rf /opt/valet
+# remove valet-specific files in /etc/NetworkManager/conf.d
+# and /etc/NetworkManager/dnsmasq.d
+rm -f /etc/dnsmasq.d/valet /etc/dnsmasq.d/options
+systemctl enable --now systemd-resolved
+# leave dnsmasq-base installed; remove the dnsmasq package only
+ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+systemctl restart NetworkManager</code></pre></code-panel>
+        </section>
+
+        <!-- ============================= VALET LINUX SERVING ============================= -->
+        <section id="section-valet-serving" v-show="active === 'valet-serving'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Original project · daily use</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Serving sites</h1>
+          <p class="lead mt-4 text-lg"><code>park</code> serves every project in a directory; <code>link</code> serves one project with a custom name.</p>
+
+          <h2 class="mt-10">park</h2>
+          <code-panel label="a projects root" lang="bash"><pre><code>mkdir -p ~/Sites &amp;&amp; cd ~/Sites
+valet park
+laravel new blog
+# open http://blog.test</code></pre></code-panel>
+          <p class="mt-4">Every new folder under a parked path automatically becomes <code>folder-name.test</code>. Use <code>valet paths</code> to list roots and <code>valet forget</code> to remove the current one.</p>
+
+          <h2 class="mt-10">link</h2>
+          <code-panel label="a single site" lang="bash"><pre><code>cd ~/projects/my-app
+valet link app-name       # http://app-name.test
+valet link blog.app-name  # a subdomain alias
+valet links               # list aliases
+valet unlink app-name</code></pre></code-panel>
+          <p class="mt-4">Links are stored in <code>~/.valet/Sites</code>. You can serve the same project from multiple names by adding more links.</p>
+
+          <h2 class="mt-10">HTTPS</h2>
+          <code-panel lang="bash"><pre><code>valet secure blog        # trusted TLS certificate
+valet secured blog       # is it secured?
+valet unsecure blog      # back to plain HTTP</code></pre></code-panel>
+          <p class="mt-4">Restart your browser after securing or unsecuring a site so it trusts the new certificate. See the <button class="font-bold text-sky-600 hover:underline dark:text-sky-400" @click="go('valet-faq')">original FAQ</button> for manual CA import steps.</p>
+        </section>
+
+        <!-- ============================= VALET LINUX SHARING ============================= -->
+        <section id="section-valet-sharing" v-show="active === 'valet-sharing'" class="animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Original project · tunnels</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Sharing sites publicly</h1>
+          <p class="mt-4 max-w-3xl text-lg leading-8 text-ink-600 dark:text-ink-400">The <code>valet</code> wrapper starts an ngrok tunnel for the current site, copies the public URL to your clipboard and launches a background helper that answers <code>valet fetch-share-url</code>.</p>
+          <code-panel label="ngrok tunnel" lang="bash"><pre><code>cd ~/Sites/blog
+valet share             # Ctrl+C to stop
+valet fetch-share-url   # print the active public URL</code></pre></code-panel>
+          <div class="callout mt-6 border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100">
+            <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2 20h20L12 3Zm0 6v5m0 3h.01" stroke-linecap="round"/></svg>
+            <div><span class="callout-title">Secured sites cannot be shared</span>The original project cannot tunnel a site that has been through <code>valet secure</code>. Run <code>valet unsecure &lt;site&gt;</code> first, or use Valet Linux+ with its newer ngrok integration.</div>
+          </div>
+          <p class="mt-6 text-sm text-ink-500">The wrapper resolves symlinked host names, reads the configured domain and port from <code>~/.valet/config.json</code>, and picks port 88 when the site is secured. It requires <code>jq</code>, <code>xsel</code> and <code>certutil</code>.</p>
+        </section>
+
+        <!-- ============================= VALET LINUX DRIVERS ============================= -->
+        <section id="section-valet-drivers" v-show="active === 'valet-drivers'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Original project · extensibility</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Valet drivers</h1>
+          <p class="lead mt-4 text-lg">A driver tells Valet how to recognize a project, find static files and locate its front controller. The original project ships {{ legacyDrivers.length }} drivers.</p>
+
+          <h2 class="mt-10">Custom driver</h2>
+          <p>Installing Valet creates <code>~/.valet/Drivers/SampleValetDriver.php</code>. Implement three methods — <code>serves</code>, <code>isStaticFile</code> and <code>frontControllerPath</code> — then save as <code>FrameworkValetDriver.php</code> in that directory.</p>
+          <code-panel label="WordPressValetDriver.php" lang="php"><pre><code>&lt;?php
+class WordPressValetDriver extends ValetDriver
+{
+    public function serves($sitePath, $siteName, $uri)
+    {
+        return is_dir($sitePath.'/wp-admin');
+    }
+
+    public function isStaticFile($sitePath, $siteName, $uri)
+    {
+        if (file_exists($staticFilePath = $sitePath.'/public/'.$uri)) {
+            return $staticFilePath;
+        }
+        return false;
+    }
+
+    public function frontControllerPath($sitePath, $siteName, $uri)
+    {
+        return $sitePath.'/public/index.php';
+    }
+}</code></pre></code-panel>
+          <p class="mt-4">All three methods receive the absolute <code>$sitePath</code>, the host portion <code>$siteName</code> and the request <code>$uri</code>. <code>isStaticFile</code> is only called for non-root requests after <code>serves</code> returns true.</p>
+
+          <h2 class="mt-10">Local driver</h2>
+          <p>For a single application, add <code>LocalValetDriver.php</code> to the project root. It may extend the base driver or an existing one such as <code>LaravelValetDriver</code>:</p>
+          <code-panel label="LocalValetDriver.php" lang="php"><pre><code>&lt;?php
+class LocalValetDriver extends LaravelValetDriver
+{
+    public function serves($sitePath, $siteName, $uri)
+    {
+        return true;
+    }
+
+    public function frontControllerPath($sitePath, $siteName, $uri)
+    {
+        return $sitePath.'/public_html/index.php';
+    }
+}</code></pre></code-panel>
+          <p class="mt-4">Use <code>valet which</code> inside a project to see which driver Valet assigned.</p>
+        </section>
+
+        <!-- ============================= VALET LINUX CONFIG ============================= -->
+        <section id="section-valet-config" v-show="active === 'valet-config'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Original project · internals</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Configuration &amp; files</h1>
+          <p class="lead mt-4 text-lg">Original Valet keeps everything under <code>~/.valet</code>. The base config is JSON and is owned by your normal user.</p>
+
+          <div class="mt-8 grid gap-4 sm:grid-cols-2">
+            <div class="surface p-5"><p class="font-mono text-sm font-bold text-sky-700 dark:text-sky-300">~/.valet/config.json</p><p class="mt-2 text-sm leading-7 text-ink-600 dark:text-ink-400">Stores <code>domain</code> (default <code>test</code>), <code>paths</code> and <code>port</code> (default <code>80</code>). Prefer the <code>valet domain</code>, <code>valet port</code>, <code>valet park</code> and <code>valet forget</code> commands over editing it.</p></div>
+            <div class="surface p-5"><p class="font-mono text-sm font-bold text-sky-700 dark:text-sky-300">~/.valet/Drivers</p><p class="mt-2 text-sm leading-7 text-ink-600 dark:text-ink-400">Global custom drivers and the generated <code>SampleValetDriver.php</code>.</p></div>
+            <div class="surface p-5"><p class="font-mono text-sm font-bold text-sky-700 dark:text-sky-300">~/.valet/Sites</p><p class="mt-2 text-sm leading-7 text-ink-600 dark:text-ink-400">Symbolic links created by <code>valet link</code>. Stale links are pruned on every command.</p></div>
+            <div class="surface p-5"><p class="font-mono text-sm font-bold text-sky-700 dark:text-sky-300">~/.valet/Log &amp; CA</p><p class="mt-2 text-sm leading-7 text-ink-600 dark:text-ink-400">Nginx/PHP-FPM logs and the <code>LaravelValetCASelfSigned</code> certificate authority used by <code>valet secure</code>.</p></div>
+          </div>
+
+          <h2 class="mt-12">How sudo is used</h2>
+          <p>The bash wrapper elevates <code>uninstall, install, start, restart, stop, unsecure, secure, use, isolate, unisolate</code> plus <code>domain</code>/<code>port</code> when a value is supplied. It calls <code>sudo env HOME=$HOME</code> so Valet writes into <em>your</em> home, not <code>/root</code>.</p>
+          <p>Other commands run through <code>php cli/valet.php</code> without sudo. <code>share</code> is handled entirely in the wrapper and takes over the terminal while ngrok runs.</p>
+
+          <h2 class="mt-10">PHP version files</h2>
+          <p>The selected global PHP-FPM version is stored in <code>~/.valet/use_php_version</code> when it differs from the system default. A per-site choice can also be read from a <code>.valetphprc</code> file in the project root.</p>
+        </section>
+
+        <!-- ============================= VALET LINUX COMMANDS ============================= -->
+        <section id="section-valet-commands" v-show="active === 'valet-commands'" class="animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">cpriego · reference</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Original command reference</h1>
+          <p class="mt-4 max-w-3xl text-lg leading-8 text-ink-600 dark:text-ink-400">All {{ legacyCommands.length }} commands registered by <code>cli/valet.php</code> in Valet Linux {{ legacyVersion }} — filter by category or search by name, option or description.</p>
+
+          <div class="surface mt-8 p-4 sm:p-5">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <div class="relative flex-1">
+                <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <input v-model="legacyCommandQuery" type="search" placeholder="Try: isolate, proxy, --secure…" class="w-full rounded-xl border border-ink-200 bg-white py-2.5 pl-10 pr-3 text-sm outline-none transition placeholder:text-ink-400 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 dark:border-ink-700 dark:bg-ink-900 dark:focus:ring-sky-950">
+              </div>
+              <span class="shrink-0 text-sm text-ink-500">Showing <strong class="text-ink-900 dark:text-white">{{ filteredLegacyCommands.length }}</strong> / {{ legacyCommands.length }}</span>
+            </div>
+            <div class="mt-4 flex flex-wrap gap-2">
+              <button v-for="cat in legacyCommandCategories" :key="cat" @click="legacyCommandCategory = cat" class="rounded-lg px-3 py-1.5 text-xs font-semibold transition" :class="legacyCommandCategory === cat ? 'bg-sky-600 text-white' : 'bg-ink-100 text-ink-600 hover:bg-ink-200 dark:bg-ink-800 dark:text-ink-300 dark:hover:bg-ink-700'">{{ cat }}</button>
+            </div>
+          </div>
+
+          <div class="mt-6 overflow-hidden rounded-2xl border border-ink-200 dark:border-ink-800">
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[760px] text-left text-sm">
+                <thead class="bg-ink-50 dark:bg-ink-900"><tr><th class="px-4 py-3 text-xs font-bold uppercase tracking-wider text-ink-500">Command</th><th class="px-4 py-3 text-xs font-bold uppercase tracking-wider text-ink-500">Options / arguments</th><th class="px-4 py-3 text-xs font-bold uppercase tracking-wider text-ink-500">Description</th></tr></thead>
+                <tbody class="divide-y divide-ink-200 bg-white dark:divide-ink-800 dark:bg-ink-950">
+                  <tr v-for="cmd in filteredLegacyCommands" :key="cmd.cmd" class="hover:bg-sky-50/50 dark:hover:bg-sky-950/10">
+                    <td class="whitespace-nowrap px-4 py-3 align-top"><code class="rounded-md bg-sky-50 px-2 py-1 text-[12px] font-bold text-sky-700 dark:bg-sky-950/50 dark:text-sky-300">{{ cmd.cmd }}</code></td>
+                    <td class="px-4 py-3 align-top"><span class="font-mono text-[11px] text-ink-500">{{ cmd.syntax || '—' }}</span></td>
+                    <td class="px-4 py-3 align-top text-ink-600 dark:text-ink-400">{{ cmd.desc }}</td>
+                  </tr>
+                  <tr v-if="!filteredLegacyCommands.length"><td colspan="3" class="px-4 py-10 text-center text-sm text-ink-500">No commands match that search.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <h2 class="mt-14">Original cheat sheet</h2>
+          <code-panel label="a typical day (v2.x)" lang="bash"><pre><code>composer global require cpriego/valet-linux
+valet install
+cd ~/Sites &amp;&amp; valet park
+cd blog &amp;&amp; valet link
+valet secure blog
+valet use 8.1
+valet isolate php@7.4 --site=legacy-app
+valet proxy admin http://localhost:3000 --secure
+valet share
+valet status</code></pre></code-panel>
+        </section>
+
+        <!-- ============================= VALET LINUX FAQ ============================= -->
+        <section id="section-valet-faq" v-show="active === 'valet-faq'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">cpriego · official FAQ</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Original project FAQ</h1>
+          <p class="lead mt-4 text-lg">Common questions from the official Valet Linux FAQ, with commands kept in their original <code>~/.valet</code> form.</p>
+          <div class="mt-9 space-y-4">
+            <article v-for="(faq, i) in legacyFaqs" :key="faq.q" class="overflow-hidden rounded-2xl border border-ink-200 bg-white dark:border-ink-800 dark:bg-ink-900/50">
+              <button @click="openLegacyFaq = openLegacyFaq === i ? -1 : i" class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold text-ink-900 dark:text-white">
+                <span>{{ faq.q }}</span>
+                <svg class="h-4 w-4 shrink-0 text-sky-500 transition-transform" :class="openLegacyFaq === i ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <div v-show="openLegacyFaq === i" class="border-t border-ink-200 px-5 py-4 text-sm leading-7 text-ink-600 dark:border-ink-800 dark:text-ink-400" v-html="faq.a"></div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============================= MIGRATION ============================= -->
+        <section id="section-migration" v-show="active === 'migration'" class="prose-docs animate-fade-up py-10 sm:py-14">
+          <p class="eyebrow">Both projects</p>
+          <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">Migrating from Valet Linux to Valet Linux+</h1>
+          <p class="lead mt-4 text-lg">Most daily commands are unchanged. The big differences are PHP 8.2+, the moved config home, managed services and a larger CLI.</p>
+
+          <h2 class="mt-10">Before you switch</h2>
+          <ol>
+            <li>Back up <code>~/.valet/config.json</code>, your parked paths and any custom drivers.</li>
+            <li>Read the <button class="font-bold text-brand-600 hover:underline dark:text-brand-400" @click="go('requirements')">Valet Linux+ requirements</button> — PHP 8.2+ is mandatory.</li>
+            <li>Uninstall the original package only after your new environment is working: <code>valet uninstall</code> then <code>composer global remove cpriego/valet-linux</code>.</li>
+          </ol>
+
+          <h2 class="mt-10">Install the successor</h2>
+          <code-panel label="switch packages" lang="bash"><pre><code>valet uninstall                         # original
+composer global remove cpriego/valet-linux
+composer global require genesisweb/valet-linux-plus
+valet install</code></pre></code-panel>
+          <p class="mt-4">On first run, Valet Linux+ migrates the old <code>~/.valet</code> configuration into <code>~/.config/valet</code> automatically. Re-park any paths that were not carried over.</p>
+
+          <h2 class="mt-10">Command mapping</h2>
+          <div class="mt-6 overflow-x-auto rounded-2xl border border-ink-200 dark:border-ink-800">
+            <table class="w-full min-w-[720px] text-left text-sm">
+              <thead class="bg-ink-50 dark:bg-ink-900"><tr><th class="px-4 py-3 text-xs font-bold uppercase text-ink-500">Original</th><th class="px-4 py-3 text-xs font-bold uppercase text-ink-500">Linux+</th><th class="px-4 py-3 text-xs font-bold uppercase text-ink-500">Note</th></tr></thead>
+              <tbody class="divide-y divide-ink-200 dark:divide-ink-800"><tr v-for="row in migrationMap" :key="row[0]"><td class="px-4 py-3 font-mono text-[12px] text-ink-700 dark:text-ink-300" v-html="row[0]"></td><td class="px-4 py-3 font-mono text-[12px] text-brand-700 dark:text-brand-400" v-html="row[1]"></td><td class="px-4 py-3 text-ink-600 dark:text-ink-400" v-html="row[2]"></td></tr></tbody>
+            </table>
+          </div>
+
+          <h2 class="mt-14">Gained in Linux+</h2>
+          <p>The successor adds <code>db:*</code> commands, Mailpit at <code>mails.test</code>, Redis, <code>code/ps/atom/subl</code> editor shortcuts, <code>--update-cli</code>, <code>--secure</code> isolation, ngrok auth storage and a 45-command CLI. Lose the original 5.6/7.x PHP support and the <code>~/.valet</code> layout.</p>
+          <div class="mt-8 flex flex-wrap gap-3"><button class="btn-primary" @click="go('features')">Explore Linux+ features</button><button class="btn-ghost" @click="go('commands')">Browse 45 commands</button></div>
+        </section>
+      </div>
+
+      <!-- ================= RIGHT TOC ================= -->
+      <aside class="sticky top-24 hidden h-[calc(100vh-7rem)] w-56 shrink-0 self-start overflow-y-auto py-12 xl:block">
+        <p class="mb-3 text-[10px] font-bold uppercase tracking-[.18em] text-ink-400">On this page</p>
+        <div class="space-y-1 border-l border-ink-200 dark:border-ink-800">
+          <button v-for="h in toc" :key="h.id" @click="scrollToId(h.id)"
+            class="block w-full border-l-2 py-1 pl-3 text-left text-[12px] leading-5 transition"
+            :class="activeHeading === h.id ? 'border-brand-500 font-semibold text-brand-600 dark:text-brand-400' : 'border-transparent text-ink-500 hover:text-ink-800 dark:hover:text-ink-200'">
+            {{ h.text }}
+          </button>
+        </div>
+        <div class="mt-8 border-t border-ink-200 pt-5 dark:border-ink-800">
+          <button @click="openCommandReference" class="text-xs font-semibold text-brand-600 hover:underline dark:text-brand-400">Command cheat sheet →</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="border-t border-ink-200 bg-ink-50/60 lg:ml-[272px] dark:border-ink-800 dark:bg-ink-900/30">
+    <div class="mx-auto flex max-w-content flex-col gap-4 px-6 py-8 text-sm text-ink-500 sm:flex-row sm:items-center sm:justify-between lg:px-12">
+      <p>Valet Linux &amp; Valet Linux+ documentation — an independent static reference. Both projects are MIT licensed.</p>
+      <div class="flex flex-wrap gap-5">
+        <a href="https://github.com/cpriego/valet-linux" target="_blank" rel="noopener" class="hover:text-brand-600">Original repo</a>
+        <a href="https://github.com/genesisweb/valet-linux-plus" target="_blank" rel="noopener" class="hover:text-brand-600">Linux+ repo</a>
+        <button @click="go('project-comparison')" class="hover:text-brand-600">Compare</button>
+        <button @click="go('license')" class="hover:text-brand-600">License</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= COMMAND PALETTE ================= -->
+  <div v-if="paletteOpen" class="fixed inset-0 z-[80] flex items-start justify-center px-4 pt-[12vh]">
+    <div class="absolute inset-0 bg-ink-950/60 backdrop-blur-sm" @click="paletteOpen = false"></div>
+    <div class="relative w-full max-w-xl overflow-hidden rounded-2xl border border-ink-200 bg-white shadow-2xl dark:border-ink-700 dark:bg-ink-900">
+      <div class="flex items-center gap-3 border-b border-ink-200 px-4 dark:border-ink-800">
+        <svg class="h-5 w-5 text-ink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input ref="paletteInput" v-model="paletteQuery" @keydown.down.prevent="paletteIndex = Math.min(paletteIndex + 1, paletteResults.length - 1)" @keydown.up.prevent="paletteIndex = Math.max(paletteIndex - 1, 0)" @keydown.enter.prevent="pickPalette()" placeholder="Search pages and commands…" class="w-full bg-transparent py-4 text-sm outline-none placeholder:text-ink-400">
+        <kbd>ESC</kbd>
+      </div>
+      <div class="max-h-[55vh] overflow-y-auto p-2">
+        <p class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-ink-400">Results</p>
+        <button v-for="(r, i) in paletteResults" :key="r.id" @click="pickPalette(r)"
+          class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition"
+          :class="i === paletteIndex ? 'bg-brand-50 text-brand-700 dark:bg-brand-950/50 dark:text-brand-300' : 'text-ink-700 hover:bg-ink-50 dark:text-ink-300 dark:hover:bg-ink-800'">
+          <svg class="h-4 w-4 shrink-0 text-brand-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path :d="iconPaths[r.icon] || iconPaths.book"/></svg>
+          <span class="flex-1">{{ r.label }}</span>
+          <span class="text-[10px] uppercase tracking-wider text-ink-400">{{ r.project }} · {{ r.kind }}</span>
+        </button>
+        <p v-if="!paletteResults.length" class="px-3 py-8 text-center text-sm text-ink-500">Nothing found. Try “isolate”, “database”, or “secure”.</p>
+      </div>
+      <div class="flex items-center gap-4 border-t border-ink-200 bg-ink-50 px-4 py-2.5 text-[11px] text-ink-500 dark:border-ink-800 dark:bg-ink-950">
+        <span><kbd>↑</kbd> <kbd>↓</kbd> navigate</span><span><kbd>↵</kbd> open</span><span class="ml-auto">Valet Linux+ {{ version }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- back to top -->
+  <button v-show="progress > 8" @click="backToTop" class="fixed bottom-5 right-5 z-40 grid h-10 w-10 place-items-center rounded-full border border-ink-200 bg-white text-ink-500 shadow-lg transition hover:border-brand-400 hover:text-brand-600 dark:border-ink-700 dark:bg-ink-900" aria-label="Back to top">
+    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg>
+  </button>
+
+</div>
+
+<script src="assets/js/vendor/vue.global.prod.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

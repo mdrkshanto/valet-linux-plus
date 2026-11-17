@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+  body {
+    @apply bg-white text-ink-700 antialiased dark:bg-ink-950 dark:text-ink-300;
+  }
+  ::selection {
+    @apply bg-brand-200 text-brand-900 dark:bg-brand-700 dark:text-white;
+  }
+  h1, h2, h3, h4 {
+    @apply text-ink-900 dark:text-white;
+  }
+  code, pre, kbd {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+}
+
+@layer components {
+  .prose-docs h2 {
+    @apply mt-14 mb-5 scroll-mt-28 text-2xl font-bold tracking-tight sm:text-3xl;
+  }
+  .prose-docs h3 {
+    @apply mt-9 mb-3 scroll-mt-28 text-lg font-semibold tracking-tight sm:text-xl;
+  }
+  .prose-docs p {
+    @apply my-4 leading-7;
+  }
+  .prose-docs ul {
+    @apply my-4 list-disc space-y-2 pl-6 marker:text-brand-500;
+  }
+  .prose-docs ol {
+    @apply my-4 list-decimal space-y-2 pl-6 marker:text-brand-500;
+  }
+  .prose-docs a {
+    @apply font-medium text-brand-600 underline decoration-brand-300 decoration-2 underline-offset-2 hover:text-brand-700 dark:text-brand-400 dark:decoration-brand-700 dark:hover:text-brand-300;
+  }
+  .prose-docs strong {
+    @apply font-semibold text-ink-900 dark:text-white;
+  }
+  .prose-docs hr {
+    @apply my-10 border-ink-200 dark:border-ink-800;
+  }
+  .doc-table {
+    @apply my-5 w-full overflow-hidden rounded-xl border border-ink-200 text-left text-sm dark:border-ink-800;
+  }
+  .doc-table th {
+    @apply bg-ink-50 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-ink-500 dark:bg-ink-900 dark:text-ink-400;
+  }
+  .doc-table td {
+    @apply border-t border-ink-200 px-4 py-3 align-top dark:border-ink-800;
+  }
+  .doc-table tbody tr:hover {
+    @apply bg-brand-50/60 dark:bg-brand-950/20;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold;
+  }
+  .callout {
+    @apply my-6 flex gap-3 rounded-xl border px-4 py-4 text-sm leading-6;
+  }
+  .callout-title {
+    @apply mb-1 block text-sm font-bold;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/20 transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:focus:ring-offset-ink-950;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-ink-200 bg-white px-5 py-3 text-sm font-semibold text-ink-700 transition hover:border-brand-300 hover:text-brand-600 dark:border-ink-700 dark:bg-ink-900 dark:text-ink-200 dark:hover:border-brand-700 dark:hover:text-brand-400;
+  }
+  .surface {
+    @apply rounded-2xl border border-ink-200 bg-white shadow-soft dark:border-ink-800 dark:bg-ink-900/60;
+  }
+  .eyebrow {
+    @apply text-xs font-bold uppercase tracking-[.18em] text-brand-600 dark:text-brand-400;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-lg border border-ink-200 bg-ink-50 px-2.5 py-1 font-mono text-xs text-ink-600 dark:border-ink-700 dark:bg-ink-800/60 dark:text-ink-300;
+  }
+}
+
+/* Code blocks */
+.code-block {
+  @apply relative my-5 overflow-hidden rounded-xl border border-ink-800 bg-[#0d1117];
+}
+.code-head {
+  @apply flex items-center justify-between border-b border-white/10 bg-white/[.03] px-4 py-2.5;
+}
+.code-body {
+  @apply overflow-x-auto px-4 py-4 text-[13px] leading-6 text-ink-200;
+}
+.code-body pre {
+  @apply m-0 whitespace-pre;
+}
+.code-copy {
+  @apply inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-medium text-ink-300 transition hover:border-brand-500/50 hover:text-white;
+}
+.code-dots {
+  @apply flex items-center gap-1.5;
+}
+.code-dot {
+  @apply h-2.5 w-2.5 rounded-full;
+}
+
+/* Keyboard keys */
+kbd {
+  @apply rounded border border-ink-300 bg-ink-50 px-1.5 py-0.5 text-[11px] font-semibold text-ink-600 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-300;
+}
+
+/* Scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, .45) transparent;
+}
+*::-webkit-scrollbar { width: 9px; height: 9px; }
+*::-webkit-scrollbar-thumb { background: rgba(148,163,184,.4); border-radius: 999px; border: 2px solid transparent; background-clip: content-box; }
+*::-webkit-scrollbar-thumb:hover { background: rgba(249,115,22,.55); background-clip: content-box; }
+
+/* Vue transition */
+.fade-enter-active, .fade-leave-active { transition: opacity .18s ease, transform .18s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(6px); }
